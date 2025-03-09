@@ -1,2 +1,2 @@
 # testiq
-iq tes
+testiq page

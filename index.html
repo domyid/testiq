@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tes IQ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="mx-30 md:mx-60 w-872 h-auto p-9 bg-white rounded-3xl shadow flex-col justify-center items-center gap-6 inline-flex container">
+        <div class="w-full flex flex-col lg:flex-row md:justify-between items-center header">
+            <span class="text-black text-lg md:text-xl lg:text-2xl font-medium font-['Roboto'] leading-loose">Jawablah Pertanyaan Dibawah Ini</span>
+            <div class="timer">
+                Waktu tersisa: <span id="minutes">00</span> Menit : <span id="seconds">00</span> Detik
+            </div>
+        </div>
+
+        <!-- Soal -->
+        <div id="loading" class="h-40 flex flex-col items-center">
+            <span class="flex justify-center animate-[spin_2s_linear_infinite] border-8 border-[#f1f2f3] border-l-biru border-r-biru rounded-full w-14 h-14 m-auto"></span>
+        </div>
+
+        <div id="question-container" class="self-start w-full">
+            <div id="question" class="flex flex-col mb-24">
+                <!-- <img id="question-image" class="max-w-65" src="" alt="image"> -->
+                <div id="question-text" class="text-black text-base font-normal font-['Roboto'] leading-normal">
+                </div>
+            </div>
+
+            <div class="w-full">
+                <textarea id="jawaban" rows="2" class="w-full p-3 border rounded-md border-[#3030f8] text-[#667084] outline-none" placeholder="Masukan jawaban disini..."></textarea>
+            </div>
+        </div>
+
+        <div class="w-full flex flex-col lg:flex-row justify-between items-center gap-24 footer">
+            <span id="question-number" class="text-[#667084] text-base font-normal font-['Roboto'] leading-normal">
+                Pertanyaan 1 dari 50
+            </span>
+
+            <button id="next-button" class="hover:shadow-2xl hover:translate-x-1 transition-all h-11 pl-6 pr-4 py-1.5 bg-[#3030f8] rounded-full justify-center items-center gap-3 inline-flex">
+                <div class="text-white text-base font-normal font-['Roboto'] leading-normal">Selanjutnya</div>
+                <div class="w-6 h-6 relative">
+                    <!-- <img src="@/assets/icons/test_gim/chevron_right.svg" alt="icon"/> -->
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
