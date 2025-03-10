@@ -1,2 +1,4 @@
 # testiq
-testiq page
+Testing IQ Page
+
+1. Kamu membaca kebijakan privasi dan menyetujuinya

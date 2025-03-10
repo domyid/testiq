@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tes IQ</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Base styles - fallback in case style.css isn't loaded */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 36px;
+            width: 100%;
+            max-width: 872px;
+        }
+        
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+            width: 100%;
+        }
+        
+        @media (min-width: 768px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        
+        .timer {
+            font-weight: bold;
+            color: #3030f8;
+            margin-top: 16px;
+        }
+        
+        @media (min-width: 768px) {
+            .timer {
+                margin-top: 0;
+            }
+        }
+        
+        #loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 160px;
+            width: 100%;
+        }
+        
+        #loading span {
+            border: 8px solid #f1f2f3;
+            border-left-color: #3030f8;
+            border-right-color: #3030f8;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #question {
+            margin-bottom: 96px;
+        }
+        
+        #question-text {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        #jawaban {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #3030f8;
+            border-radius: 8px;
+            resize: vertical;
+            outline: none;
+            color: #667084;
+        }
+        
+        .footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 24px;
+            width: 100%;
+            gap: 24px;
+        }
+        
+        @media (min-width: 1024px) {
+            .footer {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        
+        #question-number {
+            color: #667084;
+            font-size: 16px;
+        }
+        
+        #next-button {
+            background-color: #3030f8;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            padding: 8px 24px 8px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #next-button:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(4px);
+        }
+        
+        .chevron-right {
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+        
+        .chevron-right::after {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            border-top: 2px solid white;
+            border-right: 2px solid white;
+            transform: rotate(45deg);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -5px;
+            margin-left: -5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mx-30 md:mx-60 w-872 h-auto p-9 bg-white rounded-3xl shadow flex-col justify-center items-center gap-6 inline-flex container">
+        <div class="w-full flex flex-col lg:flex-row md:justify-between items-center header">
+            <span class="text-black text-lg md:text-xl lg:text-2xl font-medium font-['Roboto'] leading-loose">Jawablah Pertanyaan Dibawah Ini</span>
+            <div class="timer">
+                Waktu tersisa: <span id="minutes">00</span> Menit : <span id="seconds">00</span> Detik
+            </div>
+        </div>
+
+        <!-- Soal -->
+        <div id="loading" class="h-40 flex flex-col items-center">
+            <span class="flex justify-center animate-[spin_2s_linear_infinite] border-8 border-[#f1f2f3] border-l-biru border-r-biru rounded-full w-14 h-14 m-auto"></span>
+        </div>
+
+        <div id="question-container" class="self-start w-full">
+            <div id="question" class="flex flex-col mb-24">
+                <div id="question-text" class="text-black text-base font-normal font-['Roboto'] leading-normal">
+                    <!-- Question will be loaded here -->
+                </div>
+            </div>
+
+            <div class="w-full">
+                <textarea id="jawaban" rows="2" class="w-full p-3 border rounded-md border-[#3030f8] text-[#667084] outline-none" placeholder="Masukan jawaban disini..."></textarea>
+            </div>
+        </div>
+
+        <div class="w-full flex flex-col lg:flex-row justify-between items-center gap-24 footer">
+            <span id="question-number" class="text-[#667084] text-base font-normal font-['Roboto'] leading-normal">
+                Pertanyaan 1 dari 50
+            </span>
+
+            <button id="next-button" class="hover:shadow-2xl hover:translate-x-1 transition-all h-11 pl-6 pr-4 py-1.5 bg-[#3030f8] rounded-full justify-center items-center gap-3 inline-flex">
+                <div class="text-white text-base font-normal font-['Roboto'] leading-normal">Selanjutnya</div>
+                <div class="w-6 h-6 relative chevron-right">
+                    <!-- SVG icon replaced with CSS triangle -->
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

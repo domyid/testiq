@@ -12,7 +12,6 @@ let jawaban = ""; // Variabel untuk menyimpan jawaban saat ini
 let listJawaban = []; // Array untuk menyimpan semua jawaban
 let isExpired = false;
 const baseUrl = 'http://localhost:8080'; // Ganti dengan URL API Anda
-const customerId = 1; // customer id
 
 // DOM Elements
 const loadingElement = document.getElementById('loading');
@@ -69,8 +68,6 @@ async function getQuestions() {
         });
     }
 }
-
-
 
 function displayQuestion(index) {
     const question = questions[index];
@@ -155,11 +152,10 @@ async function initNextQuestion() {
 async function submitJawaban() {
     try {
         const data = new FormData();
-        data.append('customer_id', customerId);
         data.append('answers', JSON.stringify(listJawaban));
 
         console.log(`siap disubmit jawaban`, listJawaban);
-        const response = await fetch(`${baseUrl}/customers/iq`, {
+        const response = await fetch(`${baseUrl}/submit-answers`, {
             method: 'POST',
             body: data,
         });

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instruksi Test IQ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-top: 50px;
+            margin-bottom: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .slide {
+            display: none;
+            flex: 1;
+            padding: 20px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button.back {
+            background-color: #95a5a6;
+        }
+        
+        button.back:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .indicator {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .dot {
+            height: 10px;
+            width: 10px;
+            background-color: #bbb;
+            border-radius: 50%;
+            margin: 0 5px;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+        
+        .dot.active {
+            background-color: #3498db;
+        }
+        
+        footer {
+            background-color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+        }
+        
+        .privacy-link {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .privacy-link:hover {
+            text-decoration: underline;
+        }
+        
+        .privacy-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+        
+        .privacy-content {
+            background-color: white;
+            width: 80%;
+            max-width: 700px;
+            max-height: 80%;
+            overflow-y: auto;
+            padding: 30px;
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #7f8c8d;
+            cursor: pointer;
+        }
+        
+        .sample-question {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                border-radius: 0;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            p {
+                font-size: 16px;
+            }
+            
+            button {
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Instruksi Pengerjaan Test IQ</h1>
+        </header>
+        
+        <!-- Slide 1 -->
+        <div class="slide active" id="slide1">
+            <div class="slide-content">
+                <p>Test ini memiliki 50 pertanyaan, secara bertahap dari mudah sehingga semakin sulit. Selesaikan semampu anda, mungkin anda tidak dapat menyelesaikan semua pertanyaan.</p>
+            </div>
+            <div class="navigation">
+                <div></div> <!-- Empty div for flex alignment -->
+                <button onclick="nextSlide()">Selanjutnya</button>
+            </div>
+        </div>
+        
+        <!-- Slide 2 -->
+        <div class="slide" id="slide2">
+            <div class="slide-content">
+                <p>Untuk test ini diberikan Waktu <span class="highlight">12 menit</span> untuk memasukkan jawaban, kerjakan dengan teliti dan jangan terburu-buru.</p>
+            </div>
+            <div class="navigation">
+                <button class="back" onclick="prevSlide()">Kembali</button>
+                <button onclick="nextSlide()">Selanjutnya</button>
+            </div>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="slide" id="slide3">
+            <div class="slide-content">
+                <p>Sebelum melakukan test ini, cobalah untuk menjawab contoh soal berikut:</p>
+                <div class="sample-question">
+                    <p>Contoh: Manakah yang tidak termasuk dalam kelompok?</p>
+                    <p>A. Apel &nbsp; B. Jeruk &nbsp; C. Pisang &nbsp; D. Kentang &nbsp; E. Mangga</p>
+                    <p>Untuk memasukkan jawaban yang benar adalah D.</p>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="back" onclick="prevSlide()">Kembali</button>
+                <button onclick="startTest()">Mulai Test</button>
+            </div>
+        </div>
+        
+        <div class="indicator">
+            <span class="dot active" onclick="goToSlide(0)"></span>
+            <span class="dot" onclick="goToSlide(1)"></span>
+            <span class="dot" onclick="goToSlide(2)"></span>
+        </div>
+    </div>
+    
+    <footer>
+        &copy; 2025 Test IQ App | <a href="#" class="privacy-link" onclick="showPrivacyPolicy()">DoMyID</a>
+    </footer>
+        
+        <!-- SweetAlert2 -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+            currentSlide = index;
+        }
+        
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+        
+        function goToSlide(index) {
+            showSlide(index);
+        }
+        
+        function startTest() {
+            Swal.fire({
+                title: 'Test akan dimulai',
+                text: 'Waktu: 12 menit',
+                icon: 'info',
+                confirmButtonText: 'Mulai Sekarang',
+                confirmButtonColor: '#3498db',
+                timer: 3000,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then((result) => {
+                    // Redirect to the test page
+                    redirectToTestPage(); 
+            });
+        }
+        
+        function redirectToTestPage() {
+            const testPageUrl = "./test.html";
+            window.location.href = testPageUrl;
+        }
+    </script>
+</body>
+</html>
