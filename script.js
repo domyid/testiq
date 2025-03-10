@@ -11,7 +11,6 @@ let currentQuestionIndex = 0;
 let jawaban = ""; // Variabel untuk menyimpan jawaban saat ini
 let listJawaban = []; // Array untuk menyimpan semua jawaban
 let isExpired = false;
-const baseUrl = 'http://localhost:8080'; // Ganti dengan URL API Anda
 
 // DOM Elements
 const loadingElement = document.getElementById('loading');
@@ -23,14 +22,36 @@ const questionNumberElement = document.getElementById('question-number');
 
 questionContainerElement.style.display = "none"; // Hidden question form
 
+const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid"; // Ganti dengan URL backend Anda jika berbeda
+
+// Fungsi untuk mengambil elemen DOM
+function getElement(id) {
+    return document.getElementById(id);
+}
+
+function displayQuestion(index) {
+    const question = questions[index];
+    const questionContent = document.getElementById('question-text');
+
+    if (question) {
+        // Menampilkan teks pertanyaan menggunakan innerHTML
+        questionContent.innerHTML = question.question;
+
+        // Jika ada gambar, tampilkan
+        if (question.image) {
+            questionContent.innerHTML += `<br><img src="${question.image}" alt="Gambar Soal">`;
+        }
+    }
+}
+
 // Fungsi untuk mengambil pertanyaan dari API
 async function getQuestions() {
     try {
         loadingElement.style.display = "flex"; // Show loading
         questionContainerElement.style.display = "none"; // Hidden question form
-        
-        const response = await fetch(`${baseUrl}/questions`);
-        
+
+        const response = await fetch(`${API_URL}/data/iq/questions`);
+
         console.log("Response status:", response.status);
         console.log("Response headers:", response.headers);
 
@@ -66,16 +87,6 @@ async function getQuestions() {
             text: error.message, // Tampilkan pesan error
             confirmButtonText: "OK",
         });
-    }
-}
-
-function displayQuestion(index) {
-    const question = questions[index];
-    const questionContent = document.getElementById('question-text');
-
-    if (question) {
-        // Menampilkan teks pertanyaan menggunakan innerHTML
-        questionContent.innerHTML = question.Question;
     }
 }
 
@@ -155,7 +166,7 @@ async function submitJawaban() {
         data.append('answers', JSON.stringify(listJawaban));
 
         console.log(`siap disubmit jawaban`, listJawaban);
-        const response = await fetch(`${baseUrl}/submit-answers`, {
+        const response = await fetch(`${API_URL}/submit-answers`, {
             method: 'POST',
             body: data,
         });
