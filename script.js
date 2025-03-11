@@ -1,6 +1,6 @@
 // Inisialisasi
-let minutes = 11;
-let seconds = 59;
+let minutes = 12;
+let seconds = 0;
 let question_page = 1;
 const question_last_page = 50;
 let timerInterval;
@@ -40,15 +40,19 @@ function displayQuestion() {
         return;
     }
 
-    // Pisahkan soal dan pilihan jawaban
-    const questionParts = question.question.split("<br>");
-    const soalUtama = questionParts.shift().trim();
-    const pilihanJawaban = questionParts.map(option => option.trim()).filter(option => option !== "");
+    // Pisahkan soal utama dan pilihan jawaban
+    let questionParts = question.question.split("<br>");
+    let soalUtama = questionParts.shift().trim();
+    let pilihanJawaban = questionParts.map(option => option.trim()).filter(option => option !== "");
+
+    // Cek apakah soal butuh jawaban ganda (checkbox) atau jawaban teks
+    let isMultipleAnswer = /\d+\s*dan\s*\d+/i.test(question.question);
+    let isTextAnswer = pilihanJawaban.length === 0; // Jika tidak ada pilihan jawaban, berarti jawaban teks
 
     // Tampilkan soal utama
     questionTextElement.innerHTML = htmlDecode(soalUtama);
 
-    // Tampilkan gambar jika tersedia
+    // Tampilkan gambar jika ada
     if (question.image && question.image.trim() !== "") {
         questionImageContainer.innerHTML = `<img src="${question.image}" alt="Gambar Soal" style="max-width:100%; display:block;">`;
     } else {
@@ -58,24 +62,51 @@ function displayQuestion() {
     // Hapus jawaban lama sebelum menampilkan yang baru
     jawabanContainer.innerHTML = "";
 
-    if (pilihanJawaban.length > 0) {
+    if (isTextAnswer) {
+        // **Tambahkan input teks jika tidak ada pilihan jawaban**
+        jawabanContainer.innerHTML = `
+            <input type="text" id="text-answer" class="text-answer-input" placeholder="Ketik jawaban Anda di sini..." style="width:100%; padding:10px; font-size:16px;">
+        `;
+    } else {
         let optionsHTML = "<ul>";
-        pilihanJawaban.forEach(option => {
+        let inputType = isMultipleAnswer ? "checkbox" : "radio"; // Gunakan checkbox jika perlu jawaban ganda
+
+        pilihanJawaban.forEach((option, index) => {
+            let optionValue = option.replace(/^\d+\.\s*/, ""); // Hapus angka di depan pilihan
             optionsHTML += `
                 <li>
                     <label>
-                        <input type="radio" name="jawaban" value="${option}">
-                        ${option}
+                        <input type="${inputType}" name="jawaban" value="${optionValue}" class="jawaban-checkbox">
+                        ${optionValue}
                     </label>
                 </li>
             `;
         });
+
         optionsHTML += "</ul>";
         jawabanContainer.innerHTML = optionsHTML;
-    } else {
-        jawabanContainer.innerHTML = `<textarea id="jawaban-input" placeholder="Masukkan jawaban di sini..."></textarea>`;
+
+        // Tambahkan event listener jika soal butuh jawaban ganda (maks 2 checkbox)
+        if (isMultipleAnswer) {
+            document.querySelectorAll(".jawaban-checkbox").forEach((checkbox) => {
+                checkbox.addEventListener("change", function () {
+                    let checkedBoxes = document.querySelectorAll(".jawaban-checkbox:checked");
+                    if (checkedBoxes.length > 2) {
+                        this.checked = false; // Batalkan pilihan jika lebih dari 2
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Maksimal 2 Jawaban",
+                            text: "Anda hanya bisa memilih maksimal 2 jawaban.",
+                            confirmButtonText: "OK",
+                        });
+                    }
+                });
+            });
+        }
     }
 }
+
+
 
 // Fungsi untuk mengambil soal berdasarkan ID
 async function getQuestionById(id) {
@@ -131,12 +162,49 @@ function startTimer() {
 }
 
 // Fungsi untuk ke soal berikutnya
+// Fungsi untuk ke soal berikutnya
 async function initNextQuestion() {
-    const selectedAnswer = document.querySelector('input[name="jawaban"]:checked') 
-                            ? document.querySelector('input[name="jawaban"]:checked').value 
-                            : document.getElementById("jawaban-input") 
-                            ? document.getElementById("jawaban-input").value.trim() 
-                            : "";
+    let selectedAnswer = "";
+    
+    // Periksa apakah ini soal dengan jawaban teks
+    const textAnswer = document.getElementById("text-answer");
+    if (textAnswer) {
+        selectedAnswer = textAnswer.value.trim();
+    } 
+    // Jika bukan jawaban teks, periksa radio/checkbox
+    else {
+        // Periksa apakah ini soal dengan jawaban ganda (multiple answer)
+        const checkedBoxes = document.querySelectorAll('input[name="jawaban"]:checked');
+        
+        // Jika minimal satu pilihan dipilih
+        if (checkedBoxes.length > 0) {
+            // Cek apakah ini soal butuh jawaban ganda (checkbox)
+            let isMultipleAnswer = false;
+            if (question && question.question) {
+                isMultipleAnswer = /\d+\s*dan\s*\d+/i.test(question.question);
+            }
+            
+            if (isMultipleAnswer) {
+                // Untuk soal jawaban ganda, minimal harus 2 pilihan (jika tersedia)
+                if (checkedBoxes.length < 2) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Pilih 2 Jawaban',
+                        text: 'Soal ini membutuhkan 2 jawaban. Silakan pilih 2 jawaban.',
+                        confirmButtonText: "OK",
+                    });
+                    return;
+                }
+                
+                // Kumpulkan semua jawaban yang dipilih dan gabungkan
+                const answers = Array.from(checkedBoxes).map(cb => cb.value);
+                selectedAnswer = answers.join(" dan ");
+            } else {
+                // Untuk soal jawaban tunggal, ambil nilai dari elemen yang dipilih
+                selectedAnswer = checkedBoxes[0].value;
+            }
+        }
+    }
 
     if (!selectedAnswer) {
         Swal.fire({
@@ -152,12 +220,14 @@ async function initNextQuestion() {
     listJawaban.push(selectedAnswer);
 
     question_page++;
-    currentQuestionId = String(parseInt(currentQuestionId) + 1); 
-
+    
+    // Cek apakah sudah mencapai soal terakhir
     if (question_page > question_last_page) {
-        submitJawaban();
+        submitJawaban(); // Panggil fungsi submit untuk menampilkan alert sukses
         return;
     }
+
+    currentQuestionId = String(parseInt(currentQuestionId) + 1); 
 
     try {
         await getQuestionById(currentQuestionId);
@@ -172,20 +242,48 @@ async function initNextQuestion() {
 // Fungsi untuk mengirim jawaban
 async function submitJawaban() {
     try {
+        loadingElement.style.display = "flex";
+        questionContainerElement.style.display = "none";
+        
         const response = await fetch(`${API_URL}/submit-answers`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ answers: listJawaban }),
         });
+        
         const responseData = await response.json();
+        
+        loadingElement.style.display = "none";
+        
+        // Tampilkan alert sukses seperti pada gambar
         Swal.fire({
             icon: 'success',
             title: 'Jawaban Dikirim',
-            text: responseData.message,
+            html: `
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="width: 60px; height: 60px; margin: 0 auto; border-radius: 50%; border: 2px solid #4CAF50; display: flex; justify-content: center; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h2 style="margin-top: 15px; color: #333; font-size: 24px;">Jawaban Dikirim</h2>
+                    <p style="color: #666; margin-top: 10px;">Test IQ anda telah selesai! Ayo lihat hasilnya sekarang.</p>
+                </div>
+            `,
+            showConfirmButton: true,
             confirmButtonText: "OK",
-        }).then(() => location.reload());
+            confirmButtonColor: "#4F46E5",
+            customClass: {
+                confirmButton: 'swal-confirm-button',
+            }
+        }).then(() => {
+            // Redirect ke halaman hasil atau refresh halaman
+            window.location.href = "/hasiltest.html"; // Ganti dengan URL halaman hasil yang sesuai
+            // Atau jika ingin refresh: location.reload();
+        });
     } catch (error) {
         console.error("Error submitting answers:", error);
+        loadingElement.style.display = "none";
         Swal.fire({
             icon: 'error',
             title: 'Error',

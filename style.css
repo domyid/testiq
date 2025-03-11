@@ -140,6 +140,14 @@ body {
     transform: translateX(0.25rem);
 }
 
+.swal-confirm-button {
+    background-color: #4F46E5 !important;
+    color: white !important;
+    border-radius: 4px !important;
+    font-weight: bold !important;
+    padding: 10px 24px !important;
+}
+
 /* Animasi Loading */
 @keyframes spin {
     0% {
