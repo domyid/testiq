@@ -1,5 +1,5 @@
 // Inisialisasi
-let minutes = 12;
+let minutes = 1;
 let seconds = 0;
 let question_page = 1;
 const question_last_page = 50;
@@ -245,51 +245,27 @@ async function submitJawaban() {
         loadingElement.style.display = "flex";
         questionContainerElement.style.display = "none";
         
-        const response = await fetch(`${API_URL}/submit-answers`, {
+        const response = await fetch(`${API_URL}/api/iq/score`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ answers: listJawaban }),
         });
         
         const responseData = await response.json();
-        
+        const scoreResponse = await fetch(`${API_URL}/api/iqscoring`);
+        const scoreData = await scoreResponse.json();
+
         loadingElement.style.display = "none";
-        
-        // Tampilkan alert sukses seperti pada gambar
         Swal.fire({
             icon: 'success',
             title: 'Jawaban Dikirim',
-            html: `
-                <div style="text-align: center; margin: 20px 0;">
-                    <div style="width: 60px; height: 60px; margin: 0 auto; border-radius: 50%; border: 2px solid #4CAF50; display: flex; justify-content: center; align-items: center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                    </div>
-                    <h2 style="margin-top: 15px; color: #333; font-size: 24px;">Jawaban Dikirim</h2>
-                    <p style="color: #666; margin-top: 10px;">Test IQ anda telah selesai! Ayo lihat hasilnya sekarang.</p>
-                </div>
-            `,
-            showConfirmButton: true,
-            confirmButtonText: "OK",
-            confirmButtonColor: "#4F46E5",
-            customClass: {
-                confirmButton: 'swal-confirm-button',
-            }
+            text: `Skor Anda: ${scoreData.score}`,
+            confirmButtonText: "OK"
         }).then(() => {
-            // Redirect ke halaman hasil atau refresh halaman
-            window.location.href = "/hasiltest.html"; // Ganti dengan URL halaman hasil yang sesuai
-            // Atau jika ingin refresh: location.reload();
+            window.location.href = "/hasiltest.html";
         });
     } catch (error) {
         console.error("Error submitting answers:", error);
-        loadingElement.style.display = "none";
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Terjadi kesalahan saat mengirim jawaban.',
-            confirmButtonText: "OK",
-        });
     }
 }
 
