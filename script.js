@@ -251,6 +251,26 @@ async function submitJawaban() {
             body: JSON.stringify({ answers: listJawaban }),
         });
         
+        const textData = await response.text(); // Ambil data sebagai teks dulu
+
+try {
+    const jsonData = JSON.parse(textData); // Coba parsing sebagai JSON
+    Swal.fire({
+        icon: 'success',
+        title: 'Jawaban Dikirim',
+        text: `Skor Anda: ${jsonData.score}`,
+        confirmButtonText: "OK"
+    });
+} catch (error) {
+    console.error("Error parsing response:", textData); // Tampilkan jika ada error parsing
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Terjadi kesalahan dalam mengambil skor.',
+        confirmButtonText: "OK"
+    });
+}
+
         const responseData = await response.json();
         const scoreResponse = await fetch(`${API_URL}/api/iqscoring`);
         const scoreData = await scoreResponse.json();
