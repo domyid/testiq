@@ -6,8 +6,8 @@ let seconds = 59;
 let question_page = 1;
 const question_last_page = 50;
 let timerInterval;
-let question = null; // Menyimpan soal saat ini
-let currentQuestionIndex = 0;
+let currentQuestionId = 1; // Mulai dari ID 1
+let question = null;
 let jawaban = "";
 let listJawaban = [];
 let isExpired = false;
@@ -41,13 +41,13 @@ function displayQuestion() {
     }
 }
 
-// Fungsi untuk mengambil satu soal acak
-async function getRandomQuestion() {
+// Fungsi untuk mengambil soal berdasarkan ID
+async function getQuestionById(id) {
     try {
         loadingElement.style.display = "flex";
         questionContainerElement.style.display = "none";
 
-        const response = await fetch(`${API_URL}/data/iq/question`);
+        const response = await fetch(`${API_URL}/api/iq/question/${id}`);
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -60,15 +60,15 @@ async function getRandomQuestion() {
         }
 
         const data = await response.json();
-        console.log("Random Question Data:", data);
+        console.log("Question data by ID:", data);
 
         loadingElement.style.display = "none";
         questionContainerElement.style.display = "block";
 
-        question = data; // Simpan soal yang diambil
-        displayQuestion(); // Tampilkan soal
+        question = data;
+        displayQuestion();
     } catch (error) {
-        console.error("Error fetching random question:", error);
+        console.error("Error fetching question by ID:", error);
         Swal.fire({
             icon: "error",
             title: "Gagal Memuat Soal",
@@ -134,7 +134,8 @@ async function initNextQuestion() {
                 question_page = 1; // Reset ke awal jika sudah di akhir
             }
 
-            getRandomQuestion(); // Ambil soal berikutnya
+            currentQuestionId++; // Naikkan ID soal berikutnya
+            getQuestionById(currentQuestionId);
             document.getElementById("jawaban").value = "";
             document.getElementById("question-number").innerText = `Pertanyaan ${question_page} dari ${question_last_page}`;
         }
@@ -187,7 +188,7 @@ document.getElementById("jawaban").addEventListener("keydown", (event) => {
 
 // Inisialisasi saat halaman dimuat
 window.onload = () => {
-    getRandomQuestion(); // Muat soal pertama
+    getQuestionById(currentQuestionId); // Load first question by ID
     startTimer(); // Mulai timer
     updateTimerDisplay();
 };
