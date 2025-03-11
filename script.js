@@ -14,7 +14,6 @@ let isExpired = false;
 const loadingElement = document.getElementById('loading');
 const questionContainerElement = document.getElementById('question-container');
 const questionTextElement = document.getElementById('question-text');
-console.log(questionTextElement); // Harusnya tidak null
 const questionImageContainer = document.getElementById('question-image-container');
 const jawabanContainer = document.getElementById('jawaban-container');
 const nextButtonElement = document.getElementById('next-button');
@@ -40,8 +39,6 @@ function displayQuestion() {
         questionTextElement.innerHTML = "<strong>Soal tidak tersedia.</strong>";
         return;
     }
-
-    console.log("Menampilkan soal:", question);
 
     // Pisahkan soal dan pilihan jawaban
     const questionParts = question.question.split("<br>");
