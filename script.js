@@ -6,7 +6,7 @@ let seconds = 59;
 let question_page = 1;
 const question_last_page = 50;
 let timerInterval;
-let currentQuestionId = 1; // Mulai dari ID 1
+let currentQuestionId = "1"; 
 let question = null;
 let jawaban = "";
 let listJawaban = [];
@@ -134,7 +134,7 @@ async function initNextQuestion() {
                 question_page = 1; // Reset ke awal jika sudah di akhir
             }
 
-            currentQuestionId++; // Naikkan ID soal berikutnya
+            currentQuestionId = String(parseInt(currentQuestionId) + 1); // Tingkatkan ID sebagai string
             getQuestionById(currentQuestionId);
             document.getElementById("jawaban").value = "";
             document.getElementById("question-number").innerText = `Pertanyaan ${question_page} dari ${question_last_page}`;
