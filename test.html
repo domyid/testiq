@@ -7,7 +7,6 @@
     <title>Tes IQ</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Base styles - fallback in case style.css isn't loaded */
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #f5f5f5;
@@ -18,7 +17,7 @@
             align-items: center;
             min-height: 100vh;
         }
-        
+
         .container {
             background-color: white;
             border-radius: 24px;
@@ -27,7 +26,7 @@
             width: 100%;
             max-width: 872px;
         }
-        
+
         .header {
             display: flex;
             flex-direction: column;
@@ -35,34 +34,22 @@
             margin-bottom: 24px;
             width: 100%;
         }
-        
-        @media (min-width: 768px) {
-            .header {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-        }
-        
+
         .timer {
             font-weight: bold;
             color: #3030f8;
             margin-top: 16px;
         }
-        
-        @media (min-width: 768px) {
-            .timer {
-                margin-top: 0;
-            }
-        }
-        
+
         #loading {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 160px;
             width: 100%;
+            display: none; /* Hidden by default */
         }
-        
+
         #loading span {
             border: 8px solid #f1f2f3;
             border-left-color: #3030f8;
@@ -72,21 +59,29 @@
             height: 56px;
             animation: spin 2s linear infinite;
         }
-        
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
+
         #question {
-            margin-bottom: 96px;
+            margin-bottom: 32px;
         }
-        
+
         #question-text {
-            font-size: 16px;
+            font-size: 18px;
             line-height: 1.5;
+            margin-bottom: 16px;
         }
-        
+
+        #jawaban-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         #jawaban {
             width: 100%;
             padding: 12px;
@@ -96,7 +91,16 @@
             outline: none;
             color: #667084;
         }
-        
+
+        #jawaban-container ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #jawaban-container li {
+            margin-bottom: 8px;
+        }
+
         .footer {
             display: flex;
             flex-direction: column;
@@ -105,105 +109,69 @@
             width: 100%;
             gap: 24px;
         }
-        
-        @media (min-width: 1024px) {
-            .footer {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-        }
-        
+
         #question-number {
             color: #667084;
             font-size: 16px;
         }
-        
+
         #next-button {
             background-color: #3030f8;
             color: white;
             border: none;
             border-radius: 9999px;
-            padding: 8px 24px 8px 24px;
+            padding: 8px 24px;
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         #next-button:hover {
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
             transform: translateX(4px);
-        }
-        
-        .chevron-right {
-            width: 24px;
-            height: 24px;
-            position: relative;
-        }
-        
-        .chevron-right::after {
-            content: '';
-            display: block;
-            width: 10px;
-            height: 10px;
-            border-top: 2px solid white;
-            border-right: 2px solid white;
-            transform: rotate(45deg);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -5px;
-            margin-left: -5px;
         }
     </style>
 </head>
 
 <body>
-    <div class="mx-30 md:mx-60 w-872 h-auto p-9 bg-white rounded-3xl shadow flex-col justify-center items-center gap-6 inline-flex container">
-        <div class="w-full flex flex-col lg:flex-row md:justify-between items-center header">
-            <span class="text-black text-lg md:text-xl lg:text-2xl font-medium font-['Roboto'] leading-loose">Jawablah Pertanyaan Dibawah Ini</span>
+    <div class="container">
+        <div class="header">
+            <span class="text-lg font-medium">Jawablah Pertanyaan Dibawah Ini</span>
             <div class="timer">
                 Waktu tersisa: <span id="minutes">00</span> Menit : <span id="seconds">00</span> Detik
             </div>
         </div>
 
-        <!-- Soal -->
-        <div id="loading" class="h-40 flex flex-col items-center">
-            <span class="flex justify-center animate-[spin_2s_linear_infinite] border-8 border-[#f1f2f3] border-l-biru border-r-biru rounded-full w-14 h-14 m-auto"></span>
+        <!-- Loader -->
+        <div id="loading">
+            <span></span>
         </div>
 
-        <div id="question-container" class="self-start w-full">
-            <div id="question" class="flex flex-col mb-24">
-                <div id="question-text" class="text-black text-base font-normal font-['Roboto'] leading-normal">
+        <!-- Soal -->
+        <div id="question-container">
+            <div id="question">
+                <div id="question-text">
                     <!-- Question will be loaded here -->
                 </div>
+                <div id="question-image-container"></div>
             </div>
 
-            <div class="w-full">
-                <textarea id="jawaban" rows="2" class="w-full p-3 border rounded-md border-[#3030f8] text-[#667084] outline-none" placeholder="Masukan jawaban disini..."></textarea>
+            <!-- Pilihan Jawaban -->
+            <div id="jawaban-container">
+                <!-- Jawaban akan dimuat di sini -->
             </div>
         </div>
 
-        <div class="w-full flex flex-col lg:flex-row justify-between items-center gap-24 footer">
-            <span id="question-number" class="text-[#667084] text-base font-normal font-['Roboto'] leading-normal">
-                Pertanyaan 1 dari 50
-            </span>
-
-            <button id="next-button" class="hover:shadow-2xl hover:translate-x-1 transition-all h-11 pl-6 pr-4 py-1.5 bg-[#3030f8] rounded-full justify-center items-center gap-3 inline-flex">
-                <div class="text-white text-base font-normal font-['Roboto'] leading-normal">Selanjutnya</div>
-                <div class="w-6 h-6 relative chevron-right">
-                    <!-- SVG icon replaced with CSS triangle -->
-                </div>
-            </button>
+        <div class="footer">
+            <span id="question-number">Pertanyaan 1 dari 50</span>
+            <button id="next-button">Selanjutnya</button>
         </div>
     </div>
 
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
-
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

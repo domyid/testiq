@@ -1,12 +1,10 @@
-// src/script.js
-
 // Inisialisasi
 let minutes = 11;
 let seconds = 59;
 let question_page = 1;
 const question_last_page = 50;
 let timerInterval;
-let currentQuestionId = "1"; 
+let currentQuestionId = "1";
 let question = null;
 let jawaban = "";
 let listJawaban = [];
@@ -16,28 +14,69 @@ let isExpired = false;
 const loadingElement = document.getElementById('loading');
 const questionContainerElement = document.getElementById('question-container');
 const questionTextElement = document.getElementById('question-text');
-const jawabanElement = document.getElementById('jawaban');
+console.log(questionTextElement); // Harusnya tidak null
+const questionImageContainer = document.getElementById('question-image-container');
+const jawabanContainer = document.getElementById('jawaban-container');
 const nextButtonElement = document.getElementById('next-button');
 const questionNumberElement = document.getElementById('question-number');
+const minutesElement = document.getElementById("minutes");
+const secondsElement = document.getElementById("seconds");
 
 questionContainerElement.style.display = "none";
 
 const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
 
-function getElement(id) {
-    return document.getElementById(id);
+// Fungsi untuk decode HTML entities
+function htmlDecode(input) {
+    let e = document.createElement('div');
+    e.innerHTML = input;
+    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
 }
 
 // Fungsi untuk menampilkan soal
 function displayQuestion() {
-    const questionContent = document.getElementById('question-text');
+    if (!question || !question.question) {
+        console.error("Soal tidak ditemukan!", question);
+        questionTextElement.innerHTML = "<strong>Soal tidak tersedia.</strong>";
+        return;
+    }
 
-    if (question) {
-        questionContent.innerHTML = question.Question;
+    console.log("Menampilkan soal:", question);
 
-        if (question.Image) {
-            questionContent.innerHTML += `<br><img src="${question.Image}" alt="Gambar Soal">`;
-        }
+    // Pisahkan soal dan pilihan jawaban
+    const questionParts = question.question.split("<br>");
+    const soalUtama = questionParts.shift().trim();
+    const pilihanJawaban = questionParts.map(option => option.trim()).filter(option => option !== "");
+
+    // Tampilkan soal utama
+    questionTextElement.innerHTML = htmlDecode(soalUtama);
+
+    // Tampilkan gambar jika tersedia
+    if (question.image && question.image.trim() !== "") {
+        questionImageContainer.innerHTML = `<img src="${question.image}" alt="Gambar Soal" style="max-width:100%; display:block;">`;
+    } else {
+        questionImageContainer.innerHTML = "";
+    }
+
+    // Hapus jawaban lama sebelum menampilkan yang baru
+    jawabanContainer.innerHTML = "";
+
+    if (pilihanJawaban.length > 0) {
+        let optionsHTML = "<ul>";
+        pilihanJawaban.forEach(option => {
+            optionsHTML += `
+                <li>
+                    <label>
+                        <input type="radio" name="jawaban" value="${option}">
+                        ${option}
+                    </label>
+                </li>
+            `;
+        });
+        optionsHTML += "</ul>";
+        jawabanContainer.innerHTML = optionsHTML;
+    } else {
+        jawabanContainer.innerHTML = `<textarea id="jawaban-input" placeholder="Masukkan jawaban di sini..."></textarea>`;
     }
 }
 
@@ -46,26 +85,12 @@ async function getQuestionById(id) {
     try {
         loadingElement.style.display = "flex";
         questionContainerElement.style.display = "none";
-
         const response = await fetch(`${API_URL}/api/iq/question/${id}`);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
-        }
-
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Expected JSON but received: " + contentType);
-        }
-
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const data = await response.json();
-        console.log("Question data by ID:", data);
-
+        question = data;
         loadingElement.style.display = "none";
         questionContainerElement.style.display = "block";
-
-        question = data;
         displayQuestion();
     } catch (error) {
         console.error("Error fetching question by ID:", error);
@@ -78,11 +103,13 @@ async function getQuestionById(id) {
     }
 }
 
+// Fungsi untuk memperbarui tampilan timer
 function updateTimerDisplay() {
-    document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
-    document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
+    minutesElement.innerText = String(minutes).padStart(2, '0');
+    secondsElement.innerText = String(seconds).padStart(2, '0');
 }
 
+// Fungsi untuk memulai timer
 function startTimer() {
     timerInterval = setInterval(() => {
         if (minutes === 0 && seconds === 0) {
@@ -93,102 +120,95 @@ function startTimer() {
                 title: 'Waktu habis.',
                 text: 'Terimakasih sudah melakukan test, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    submitJawaban();
-                }
-            });
+            }).then(() => submitJawaban());
             return;
         }
-
         if (seconds === 0) {
             minutes--;
             seconds = 59;
         } else {
             seconds--;
         }
-
         updateTimerDisplay();
     }, 1000);
 }
 
+// Fungsi untuk ke soal berikutnya
 async function initNextQuestion() {
-    jawaban = document.getElementById("jawaban").value;
+    const selectedAnswer = document.querySelector('input[name="jawaban"]:checked') 
+                            ? document.querySelector('input[name="jawaban"]:checked').value 
+                            : document.getElementById("jawaban-input") 
+                            ? document.getElementById("jawaban-input").value.trim() 
+                            : "";
 
-    Swal.fire({
-        icon: 'question',
-        title: 'Pindah ke soal selanjutnya?',
-        text: jawaban !== '' ? 'Sudah yakin dengan jawabanmu?.' : 'Jawaban belum diisi, yakin untuk pindah soal?.',
-        showConfirmButton: true,
-        showCancelButton: true,
-        confirmButtonColor: "#0b40f4",
-        confirmButtonText: "Ya, yakin",
-        cancelButtonColor: "#3b3f5c",
-        cancelButtonText: "Batal",
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            listJawaban.push(jawaban);
+    if (!selectedAnswer) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Jawaban Kosong!',
+            text: 'Silakan pilih atau isi jawaban sebelum lanjut.',
+            confirmButtonText: "OK",
+        });
+        return;
+    }
 
-            question_page++;
-            if (question_page > question_last_page) {
-                question_page = 1; // Reset ke awal jika sudah di akhir
-            }
+    nextButtonElement.disabled = true;
+    listJawaban.push(selectedAnswer);
 
-            currentQuestionId = String(parseInt(currentQuestionId) + 1); // Tingkatkan ID sebagai string
-            getQuestionById(currentQuestionId);
-            document.getElementById("jawaban").value = "";
-            document.getElementById("question-number").innerText = `Pertanyaan ${question_page} dari ${question_last_page}`;
-        }
-    });
+    question_page++;
+    currentQuestionId = String(parseInt(currentQuestionId) + 1); 
+
+    if (question_page > question_last_page) {
+        submitJawaban();
+        return;
+    }
+
+    try {
+        await getQuestionById(currentQuestionId);
+        questionNumberElement.innerText = `Pertanyaan ${question_page} dari ${question_last_page}`;
+    } catch (error) {
+        console.error("Gagal memuat soal berikutnya:", error);
+    } finally {
+        nextButtonElement.disabled = false;
+    }
 }
 
+// Fungsi untuk mengirim jawaban
 async function submitJawaban() {
     try {
-        const data = new FormData();
-        data.append('answers', JSON.stringify(listJawaban));
-
-        console.log(`siap disubmit jawaban`, listJawaban);
         const response = await fetch(`${API_URL}/submit-answers`, {
             method: 'POST',
-            body: data,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ answers: listJawaban }),
         });
         const responseData = await response.json();
-
         Swal.fire({
             icon: 'success',
             title: 'Jawaban Dikirim',
             text: responseData.message,
             confirmButtonText: "OK",
-        }).then(() => {
-            location.reload();
-        });
+        }).then(() => location.reload());
     } catch (error) {
-        console.error("Error:", error);
+        console.error("Error submitting answers:", error);
         Swal.fire({
             icon: 'error',
-            title: 'Error Terjadi',
-            text: 'Error saat mengirim data jawaban',
+            title: 'Error',
+            text: 'Terjadi kesalahan saat mengirim jawaban.',
             confirmButtonText: "OK",
         });
     }
 }
 
-// Attach event listener ke tombol "Selanjutnya"
-document.getElementById("next-button").addEventListener("click", () => {
-    initNextQuestion();
-});
-
-// Mencegah form submit saat menekan Enter di textarea
-document.getElementById("jawaban").addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        initNextQuestion();
-    }
-});
-
-// Inisialisasi saat halaman dimuat
+nextButtonElement.addEventListener("click", initNextQuestion);
 window.onload = () => {
-    getQuestionById(currentQuestionId); // Load first question by ID
-    startTimer(); // Mulai timer
+    getQuestionById(currentQuestionId);
+    startTimer();
     updateTimerDisplay();
 };
+
+document.addEventListener("DOMContentLoaded", function () {
+    const questionTextElement = document.getElementById('question-text');
+    if (!questionTextElement) {
+        console.error("Elemen question-text tidak ditemukan!");
+        return;
+    }
+});
