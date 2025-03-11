@@ -1,15 +1,15 @@
 // src/script.js
 
 // Inisialisasi
-let minutes = 11; // menit
-let seconds = 59; // detik
+let minutes = 11;
+let seconds = 59;
 let question_page = 1;
-const question_last_page = 50; // Sesuaikan dengan jumlah total pertanyaan
+const question_last_page = 50;
 let timerInterval;
-let questions = []; // Array untuk menyimpan pertanyaan
+let questions = [];
 let currentQuestionIndex = 0;
-let jawaban = ""; // Variabel untuk menyimpan jawaban saat ini
-let listJawaban = []; // Array untuk menyimpan semua jawaban
+let jawaban = "";
+let listJawaban = [];
 let isExpired = false;
 
 // DOM Elements
@@ -20,71 +20,107 @@ const jawabanElement = document.getElementById('jawaban');
 const nextButtonElement = document.getElementById('next-button');
 const questionNumberElement = document.getElementById('question-number');
 
-questionContainerElement.style.display = "none"; // Hidden question form
+questionContainerElement.style.display = "none";
 
-const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid"; // Ganti dengan URL backend Anda jika berbeda
+const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
 
-// Fungsi untuk mengambil elemen DOM
 function getElement(id) {
     return document.getElementById(id);
 }
 
+// Fungsi untuk menampilkan soal
 function displayQuestion(index) {
     const question = questions[index];
     const questionContent = document.getElementById('question-text');
 
     if (question) {
-        // Menampilkan teks pertanyaan menggunakan innerHTML
-        questionContent.innerHTML = question.question;
+        questionContent.innerHTML = question.Question;
 
-        // Jika ada gambar, tampilkan
-        if (question.image) {
-            questionContent.innerHTML += `<br><img src="${question.image}" alt="Gambar Soal">`;
+        if (question.Image) {
+            questionContent.innerHTML += `<br><img src="${question.Image}" alt="Gambar Soal">`;
         }
     }
 }
 
-// Fungsi untuk mengambil pertanyaan dari API
-async function getQuestions() {
+// Fungsi untuk mengambil soal berdasarkan ID
+async function getQuestionById(id) {
     try {
-        loadingElement.style.display = "flex"; // Show loading
-        questionContainerElement.style.display = "none"; // Hidden question form
+        loadingElement.style.display = "flex";
+        questionContainerElement.style.display = "none";
 
-        const response = await fetch(`${API_URL}/data/iq/questions`);
+        const response = await fetch(`${API_URL}/data/iq/questions/${id}`);
 
-        console.log("Response status:", response.status);
-        console.log("Response headers:", response.headers);
-
-        // Cek apakah respons berhasil
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
         }
 
-        // Cek tipe konten
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
             throw new Error("Expected JSON but received: " + contentType);
         }
 
-        // Ambil data
         const data = await response.json();
-        console.log("Data:", data); // Tambahkan log untuk melihat data
+        console.log("Question data by ID:", data);
+
+        loadingElement.style.display = "none";
+        questionContainerElement.style.display = "block";
+
+        // Lakukan sesuatu dengan soal yang diambil berdasarkan ID, misalnya menampilkannya
+        displayQuestion([data]); // Menampilkan soal
+    } catch (error) {
+        console.error("Error fetching question by ID:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Gagal Memuat Soal",
+            text: error.message,
+            confirmButtonText: "OK",
+        });
+    }
+}
+
+// Fungsi untuk mengambil semua soal
+async function getQuestions() {
+    try {
+        loadingElement.style.display = "flex";
+        questionContainerElement.style.display = "none";
+
+        const response = await fetch(`${API_URL}/data/iq/questions`);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Expected JSON but received: " + contentType);
+        }
+
+        const data = await response.json();
+        console.log("All Questions Data:", data);
 
         if (data && data.length > 0) {
             questions = data;
             displayQuestion(currentQuestionIndex);
             document.getElementById("question-number").innerText = `Pertanyaan ${question_page} dari ${question_last_page}`;
-            loadingElement.style.display = "none"; // Hidden loading
-            questionContainerElement.style.display = "block"; // Show question form
+            loadingElement.style.display = "none";
+            questionContainerElement.style.display = "block";
         } else {
-            throw new Error("No questions found");
+            Swal.fire({
+                icon: 'info',
+                title: 'Tidak ada soal',
+                text: data.message || 'Tidak ada soal IQ yang tersedia.',
+                confirmButtonText: 'OK'
+            });
+            throw new Error(data.message || "No questions found");
         }
     } catch (error) {
         console.error("Error:", error);
         Swal.fire({
             icon: "error",
             title: "Gagal Memuat Pertanyaan",
-            text: error.message, // Tampilkan pesan error
+            text: error.message,
             confirmButtonText: "OK",
         });
     }
@@ -125,10 +161,8 @@ function startTimer() {
 }
 
 async function initNextQuestion() {
-    // Dapatkan jawaban dari textarea
     jawaban = document.getElementById("jawaban").value;
 
-    // Tampilkan SweetAlert untuk konfirmasi
     Swal.fire({
         icon: 'question',
         title: 'Pindah ke soal selanjutnya?',
@@ -141,20 +175,19 @@ async function initNextQuestion() {
         cancelButtonText: "Batal",
     }).then(async (result) => {
         if (result.isConfirmed) {
-            // Simpan jawaban ke dalam array
             listJawaban.push(jawaban);
 
             if (question_page < question_last_page) {
-                question_page++; // Naikkan nomor halaman
+                question_page++;
             }
 
             currentQuestionIndex++;
             if (currentQuestionIndex >= questions.length) {
-                currentQuestionIndex = 0; // Reset ke awal jika sudah di akhir
+                currentQuestionIndex = 0;
             }
 
-            displayQuestion(currentQuestionIndex); // Tampilkan pertanyaan baru
-            document.getElementById("jawaban").value = ""; // Reset textarea
+            displayQuestion(currentQuestionIndex);
+            document.getElementById("jawaban").value = "";
             document.getElementById("question-number").innerText = `Pertanyaan ${question_page} dari ${question_last_page}`;
         }
     });
@@ -178,7 +211,6 @@ async function submitJawaban() {
             text: responseData.message,
             confirmButtonText: "OK",
         }).then(() => {
-            // Lakukan tindakan setelah jawaban dikirim (misalnya, refresh halaman)
             location.reload();
         });
     } catch (error) {
@@ -207,7 +239,7 @@ document.getElementById("jawaban").addEventListener("keydown", (event) => {
 
 // Inisialisasi saat halaman dimuat
 window.onload = () => {
-    getQuestions(); // Muat pertanyaan pertama
+    getQuestions(); // Muat daftar soal
     startTimer(); // Mulai timer
     updateTimerDisplay();
 };
