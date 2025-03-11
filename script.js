@@ -6,7 +6,7 @@ let seconds = 59;
 let question_page = 1;
 const question_last_page = 50;
 let timerInterval;
-let questions = [];
+let question = null; // Menyimpan soal saat ini
 let currentQuestionIndex = 0;
 let jawaban = "";
 let listJawaban = [];
@@ -29,8 +29,7 @@ function getElement(id) {
 }
 
 // Fungsi untuk menampilkan soal
-function displayQuestion(index) {
-    const question = questions[index];
+function displayQuestion() {
     const questionContent = document.getElementById('question-text');
 
     if (question) {
@@ -42,13 +41,13 @@ function displayQuestion(index) {
     }
 }
 
-// Fungsi untuk mengambil soal berdasarkan ID
-async function getQuestionById(id) {
+// Fungsi untuk mengambil satu soal acak
+async function getRandomQuestion() {
     try {
         loadingElement.style.display = "flex";
         questionContainerElement.style.display = "none";
 
-        const response = await fetch(`${API_URL}/data/iq/questions/${id}`);
+        const response = await fetch(`${API_URL}/data/iq/question`);
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -61,65 +60,18 @@ async function getQuestionById(id) {
         }
 
         const data = await response.json();
-        console.log("Question data by ID:", data);
+        console.log("Random Question Data:", data);
 
         loadingElement.style.display = "none";
         questionContainerElement.style.display = "block";
 
-        // Lakukan sesuatu dengan soal yang diambil berdasarkan ID, misalnya menampilkannya
-        displayQuestion([data]); // Menampilkan soal
+        question = data; // Simpan soal yang diambil
+        displayQuestion(); // Tampilkan soal
     } catch (error) {
-        console.error("Error fetching question by ID:", error);
+        console.error("Error fetching random question:", error);
         Swal.fire({
             icon: "error",
             title: "Gagal Memuat Soal",
-            text: error.message,
-            confirmButtonText: "OK",
-        });
-    }
-}
-
-// Fungsi untuk mengambil semua soal
-async function getQuestions() {
-    try {
-        loadingElement.style.display = "flex";
-        questionContainerElement.style.display = "none";
-
-        const response = await fetch(`${API_URL}/data/iq/questions`);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
-        }
-
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Expected JSON but received: " + contentType);
-        }
-
-        const data = await response.json();
-        console.log("All Questions Data:", data);
-
-        if (data && data.length > 0) {
-            questions = data;
-            displayQuestion(currentQuestionIndex);
-            document.getElementById("question-number").innerText = `Pertanyaan ${question_page} dari ${question_last_page}`;
-            loadingElement.style.display = "none";
-            questionContainerElement.style.display = "block";
-        } else {
-            Swal.fire({
-                icon: 'info',
-                title: 'Tidak ada soal',
-                text: data.message || 'Tidak ada soal IQ yang tersedia.',
-                confirmButtonText: 'OK'
-            });
-            throw new Error(data.message || "No questions found");
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        Swal.fire({
-            icon: "error",
-            title: "Gagal Memuat Pertanyaan",
             text: error.message,
             confirmButtonText: "OK",
         });
@@ -177,16 +129,12 @@ async function initNextQuestion() {
         if (result.isConfirmed) {
             listJawaban.push(jawaban);
 
-            if (question_page < question_last_page) {
-                question_page++;
+            question_page++;
+            if (question_page > question_last_page) {
+                question_page = 1; // Reset ke awal jika sudah di akhir
             }
 
-            currentQuestionIndex++;
-            if (currentQuestionIndex >= questions.length) {
-                currentQuestionIndex = 0;
-            }
-
-            displayQuestion(currentQuestionIndex);
+            getRandomQuestion(); // Ambil soal berikutnya
             document.getElementById("jawaban").value = "";
             document.getElementById("question-number").innerText = `Pertanyaan ${question_page} dari ${question_last_page}`;
         }
@@ -239,7 +187,7 @@ document.getElementById("jawaban").addEventListener("keydown", (event) => {
 
 // Inisialisasi saat halaman dimuat
 window.onload = () => {
-    getQuestions(); // Muat daftar soal
+    getRandomQuestion(); // Muat soal pertama
     startTimer(); // Mulai timer
     updateTimerDisplay();
 };
