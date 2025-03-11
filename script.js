@@ -6,9 +6,11 @@ const question_last_page = 50;
 let timerInterval;
 let currentQuestionId = "1";
 let question = null;
-let jawaban = "";
 let listJawaban = [];
 let isExpired = false;
+
+// API Endpoint
+const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
 
 // DOM Elements
 const loadingElement = document.getElementById('loading');
@@ -16,16 +18,17 @@ const questionContainerElement = document.getElementById('question-container');
 const questionTextElement = document.getElementById('question-text');
 const questionImageContainer = document.getElementById('question-image-container');
 const jawabanContainer = document.getElementById('jawaban-container');
-const nextButtonElement = document.getElementById('next-button');
 const questionNumberElement = document.getElementById('question-number');
 const minutesElement = document.getElementById("minutes");
 const secondsElement = document.getElementById("seconds");
 
-questionContainerElement.style.display = "none";
+// Pastikan tombol ditemukan
+const nextButtonElement = document.getElementById('next-button');
+if (!nextButtonElement) {
+    console.error("❌ Error: Tombol 'Selanjutnya' tidak ditemukan! Periksa ID di HTML.");
+}
 
-const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
-
-// Fungsi untuk decode HTML entities
+// Fungsi decode HTML entities
 function htmlDecode(input) {
     let e = document.createElement('div');
     e.innerHTML = input;
@@ -40,8 +43,7 @@ function displayQuestion() {
         return;
     }
 
-    let soalUtama = question.question.trim();
-    questionTextElement.innerHTML = htmlDecode(soalUtama);
+    questionTextElement.innerHTML = htmlDecode(question.question.trim());
 
     if (question.image && question.image.trim() !== "") {
         questionImageContainer.innerHTML = `<img src="${question.image}" alt="Gambar Soal" style="max-width:100%; display:block;">`;
@@ -53,7 +55,6 @@ function displayQuestion() {
         <input type="text" id="text-answer" class="text-answer-input" placeholder="Ketik jawaban Anda di sini..." style="width:100%; padding:10px; font-size:16px;">
     `;
 }
-
 
 // Fungsi untuk mengambil soal berdasarkan ID
 async function getQuestionById(id) {
@@ -93,7 +94,7 @@ function startTimer() {
             Swal.fire({
                 icon: 'success',
                 title: 'Waktu habis.',
-                text: 'Terimakasih sudah melakukan test, hasil IQ kamu akan keluar segera.',
+                text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
             }).then(() => submitJawaban());
             return;
@@ -109,55 +110,19 @@ function startTimer() {
 }
 
 // Fungsi untuk ke soal berikutnya
-// Fungsi untuk ke soal berikutnya
 async function initNextQuestion() {
     let selectedAnswer = "";
-    
-    // Periksa apakah ini soal dengan jawaban teks
     const textAnswer = document.getElementById("text-answer");
+
     if (textAnswer) {
         selectedAnswer = textAnswer.value.trim();
-    } 
-    // Jika bukan jawaban teks, periksa radio/checkbox
-    else {
-        // Periksa apakah ini soal dengan jawaban ganda (multiple answer)
-        const checkedBoxes = document.querySelectorAll('input[name="jawaban"]:checked');
-        
-        // Jika minimal satu pilihan dipilih
-        if (checkedBoxes.length > 0) {
-            // Cek apakah ini soal butuh jawaban ganda (checkbox)
-            let isMultipleAnswer = false;
-            if (question && question.question) {
-                isMultipleAnswer = /\d+\s*dan\s*\d+/i.test(question.question);
-            }
-            
-            if (isMultipleAnswer) {
-                // Untuk soal jawaban ganda, minimal harus 2 pilihan (jika tersedia)
-                if (checkedBoxes.length < 2) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Pilih 2 Jawaban',
-                        text: 'Soal ini membutuhkan 2 jawaban. Silakan pilih 2 jawaban.',
-                        confirmButtonText: "OK",
-                    });
-                    return;
-                }
-                
-                // Kumpulkan semua jawaban yang dipilih dan gabungkan
-                const answers = Array.from(checkedBoxes).map(cb => cb.value);
-                selectedAnswer = answers.join(" dan ");
-            } else {
-                // Untuk soal jawaban tunggal, ambil nilai dari elemen yang dipilih
-                selectedAnswer = checkedBoxes[0].value;
-            }
-        }
     }
 
     if (!selectedAnswer) {
         Swal.fire({
             icon: 'warning',
             title: 'Jawaban Kosong!',
-            text: 'Silakan pilih atau isi jawaban sebelum lanjut.',
+            text: 'Silakan isi jawaban sebelum lanjut.',
             confirmButtonText: "OK",
         });
         return;
@@ -167,14 +132,13 @@ async function initNextQuestion() {
     listJawaban.push(selectedAnswer);
 
     question_page++;
-    
-    // Cek apakah sudah mencapai soal terakhir
+
     if (question_page > question_last_page) {
-        submitJawaban(); // Panggil fungsi submit untuk menampilkan alert sukses
+        submitJawaban();
         return;
     }
 
-    currentQuestionId = String(parseInt(currentQuestionId) + 1); 
+    currentQuestionId = String(parseInt(currentQuestionId) + 1);
 
     try {
         await getQuestionById(currentQuestionId);
@@ -186,67 +150,56 @@ async function initNextQuestion() {
     }
 }
 
-// Fungsi untuk mengirim jawaban
-async function submitJawaban() {
-    try {
-        loadingElement.style.display = "flex";
-        questionContainerElement.style.display = "none";
-        
-        const response = await fetch(`${API_URL}/api/iq/score`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ answers: listJawaban }),
-        });
-        
-        const textData = await response.text(); // Ambil data sebagai teks dulu
-
-try {
-    const jsonData = JSON.parse(textData); // Coba parsing sebagai JSON
-    Swal.fire({
-        icon: 'success',
-        title: 'Jawaban Dikirim',
-        text: `Skor Anda: ${jsonData.score}`,
-        confirmButtonText: "OK"
-    });
-} catch (error) {
-    console.error("Error parsing response:", textData); // Tampilkan jika ada error parsing
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Terjadi kesalahan dalam mengambil skor.',
-        confirmButtonText: "OK"
-    });
+// Fungsi untuk mengumpulkan jawaban
+function collectAnswers() {
+    return listJawaban;
 }
 
-        const responseData = await response.json();
-        const scoreResponse = await fetch(`${API_URL}/api/iqscoring`);
-        const scoreData = await scoreResponse.json();
+// Fungsi untuk mengirim jawaban ke backend
+function submitJawaban() {
+    let collectedAnswers = collectAnswers();
 
-        loadingElement.style.display = "none";
+    console.log("✅ Jawaban yang dikumpulkan:", collectedAnswers);
+
+    if (collectedAnswers.length === 0) {
+        console.warn("⚠️ Peringatan: Tidak ada jawaban yang dikumpulkan.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Jawaban Kosong!',
+            text: 'Tidak ada jawaban yang dikumpulkan. Pastikan mengisi jawaban sebelum tes selesai.',
+            confirmButtonText: "OK",
+        });
+        return;
+    }
+
+    fetch(`${API_URL}/api/iq/score`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: collectedAnswers })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("🟢 Response dari server:", data);
         Swal.fire({
             icon: 'success',
-            title: 'Jawaban Dikirim',
-            text: `Skor Anda: ${scoreData.score}`,
-            confirmButtonText: "OK"
-        }).then(() => {
-            window.location.href = "/hasiltest.html";
+            title: 'Tes Selesai!',
+            text: 'Hasil tes IQ Anda akan segera tersedia.',
+            confirmButtonText: "OK",
         });
-    } catch (error) {
-        console.error("Error submitting answers:", error);
-    }
+    })
+    .catch(error => console.error("❌ Error submitting answers:", error));
 }
 
-nextButtonElement.addEventListener("click", initNextQuestion);
-window.onload = () => {
+// Pastikan semua elemen dan event listener terpasang setelah DOM selesai dimuat
+document.addEventListener("DOMContentLoaded", function () {
+    if (!nextButtonElement) {
+        console.error("❌ Error: Tombol 'Selanjutnya' tidak ditemukan di DOM setelah halaman dimuat!");
+        return;
+    }
+
+    nextButtonElement.addEventListener("click", initNextQuestion);
+
     getQuestionById(currentQuestionId);
     startTimer();
     updateTimerDisplay();
-};
-
-document.addEventListener("DOMContentLoaded", function () {
-    const questionTextElement = document.getElementById('question-text');
-    if (!questionTextElement) {
-        console.error("Elemen question-text tidak ditemukan!");
-        return;
-    }
 });
