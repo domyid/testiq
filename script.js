@@ -40,72 +40,19 @@ function displayQuestion() {
         return;
     }
 
-    // Pisahkan soal utama dan pilihan jawaban
-    let questionParts = question.question.split("<br>");
-    let soalUtama = questionParts.shift().trim();
-    let pilihanJawaban = questionParts.map(option => option.trim()).filter(option => option !== "");
-
-    // Cek apakah soal butuh jawaban ganda (checkbox) atau jawaban teks
-    let isMultipleAnswer = /\d+\s*dan\s*\d+/i.test(question.question);
-    let isTextAnswer = pilihanJawaban.length === 0; // Jika tidak ada pilihan jawaban, berarti jawaban teks
-
-    // Tampilkan soal utama
+    let soalUtama = question.question.trim();
     questionTextElement.innerHTML = htmlDecode(soalUtama);
 
-    // Tampilkan gambar jika ada
     if (question.image && question.image.trim() !== "") {
         questionImageContainer.innerHTML = `<img src="${question.image}" alt="Gambar Soal" style="max-width:100%; display:block;">`;
     } else {
         questionImageContainer.innerHTML = "";
     }
 
-    // Hapus jawaban lama sebelum menampilkan yang baru
-    jawabanContainer.innerHTML = "";
-
-    if (isTextAnswer) {
-        // **Tambahkan input teks jika tidak ada pilihan jawaban**
-        jawabanContainer.innerHTML = `
-            <input type="text" id="text-answer" class="text-answer-input" placeholder="Ketik jawaban Anda di sini..." style="width:100%; padding:10px; font-size:16px;">
-        `;
-    } else {
-        let optionsHTML = "<ul>";
-        let inputType = isMultipleAnswer ? "checkbox" : "radio"; // Gunakan checkbox jika perlu jawaban ganda
-
-        pilihanJawaban.forEach((option, index) => {
-            let optionValue = option.replace(/^\d+\.\s*/, ""); // Hapus angka di depan pilihan
-            optionsHTML += `
-                <li>
-                    <label>
-                        <input type="${inputType}" name="jawaban" value="${optionValue}" class="jawaban-checkbox">
-                        ${optionValue}
-                    </label>
-                </li>
-            `;
-        });
-
-        optionsHTML += "</ul>";
-        jawabanContainer.innerHTML = optionsHTML;
-
-        // Tambahkan event listener jika soal butuh jawaban ganda (maks 2 checkbox)
-        if (isMultipleAnswer) {
-            document.querySelectorAll(".jawaban-checkbox").forEach((checkbox) => {
-                checkbox.addEventListener("change", function () {
-                    let checkedBoxes = document.querySelectorAll(".jawaban-checkbox:checked");
-                    if (checkedBoxes.length > 2) {
-                        this.checked = false; // Batalkan pilihan jika lebih dari 2
-                        Swal.fire({
-                            icon: "warning",
-                            title: "Maksimal 2 Jawaban",
-                            text: "Anda hanya bisa memilih maksimal 2 jawaban.",
-                            confirmButtonText: "OK",
-                        });
-                    }
-                });
-            });
-        }
-    }
+    jawabanContainer.innerHTML = `
+        <input type="text" id="text-answer" class="text-answer-input" placeholder="Ketik jawaban Anda di sini..." style="width:100%; padding:10px; font-size:16px;">
+    `;
 }
-
 
 
 // Fungsi untuk mengambil soal berdasarkan ID
