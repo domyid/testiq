@@ -184,6 +184,7 @@ function submitJawaban() {
             if (result.isConfirmed) {
                 if (data.iq) {
                     window.location.href = `hasiltest.html?iq=${data.iq}`;
+                    console.log(data.iq)
                 } else {
                     window.location.href = `hasiltest.html`;
                 }
