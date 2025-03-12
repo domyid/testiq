@@ -40,7 +40,7 @@ function displayQuestion() {
 
     // Tampilkan teks soal
     questionTextElement.innerHTML = htmlDecode(question.question.trim());
-
+    console.log(question.image)
     // Tampilkan gambar jika ada
     if (question.image && question.image.trim() !== "") {
         questionImageContainer.innerHTML = `<img src="${question.image}" alt="Gambar Soal" style="max-width:100%; display:block;">`;
