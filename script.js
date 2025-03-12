@@ -137,7 +137,7 @@ async function initNextQuestion() {
     }
 
     // Masukkan jawaban ke dalam array
-    listJawaban.push(selectedAnswer);
+    // listJawaban.push(selectedAnswer);
 
     question_page++;
     // Cek apakah sudah melebihi jumlah soal
