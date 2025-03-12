@@ -172,8 +172,10 @@ function submitJawaban() {
     })
     .then(response => response.json())
     .then(data => {
-        // console.log("Response data:", data);
-        // console.log("🟢 Response dari server:", data);
+        console.log("Mengirim score:", finalScore);
+        console.log("Response data:", data);
+        console.log("🟢 Response dari server:", data);
+        console.log("Response dari backend:", data); // Pastikan ada iq
         // Tampilkan SweetAlert sukses
         Swal.fire({
             icon: 'success',
@@ -185,6 +187,7 @@ function submitJawaban() {
                 if (data.iq) {
                     window.location.href = `hasiltest.html?iq=${data.iq}`;
                     console.log(data.iq)
+                    console.log("Redirecting ke:", `hasiltest.html?iq=${data.iq}`);
                 } else {
                     window.location.href = `hasiltest.html`;
                 }
