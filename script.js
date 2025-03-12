@@ -8,7 +8,7 @@ let currentQuestionId = "1";
 let question = null;
 // let listJawaban = [];
 let isExpired = false;
-let finalScore = 0;s
+let finalScore = 0;
 
 // API Endpoint
 const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
