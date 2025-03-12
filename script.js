@@ -159,26 +159,32 @@ async function initNextQuestion() {
 
 // Fungsi untuk mengirim jawaban ke backend
 function submitJawaban() {
-    // Debugging: tampilkan array jawaban di console (1-based index saat menampilkan)
-    console.log("✅ Jawaban yang dikumpulkan (Array):");
-    listJawaban.forEach((ans, idx) => {
-        console.log(`${idx + 1}: ${ans}`);
-    });
+    // Debugging: tampilkan array jawaban di console
+    console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
 
     // Kirim array ke backend
     fetch(`${API_URL}/api/iq/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(listJawaban) // Langsung array
+        body: JSON.stringify(listJawaban)
     })
     .then(response => response.json())
     .then(data => {
         console.log("🟢 Response dari server:", data);
+
+        // Tampilkan SweetAlert sukses
         Swal.fire({
             icon: 'success',
             title: 'Tes Selesai!',
             text: 'Hasil tes IQ Anda akan segera tersedia.',
             confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Arahkan ke halaman hasil
+                window.location.href = "hasiltest.html";
+                // Jika ingin mengirim parameter di URL, misalnya:
+                // window.location.href = `hasiltest.html?score=${data.score}`;
+            }
         });
     })
     .catch(error => console.error("❌ Error submitting answers:", error));
