@@ -6,8 +6,9 @@ const question_last_page = 50;
 let timerInterval;
 let currentQuestionId = "1";
 let question = null;
-let listJawaban = [];
+// let listJawaban = [];
 let isExpired = false;
+let finalScore = 0;s
 
 // API Endpoint
 const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
@@ -139,7 +140,6 @@ async function initNextQuestion() {
     listJawaban.push(selectedAnswer);
 
     question_page++;
-
     // Cek apakah sudah melebihi jumlah soal
     if (question_page > question_last_page) {
         submitJawaban();
@@ -168,13 +168,12 @@ function submitJawaban() {
     fetch(`${API_URL}/api/iq/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(listJawaban)
+        body: JSON.stringify({ score: String(finalScore) }) // Kirim 'score' sebagai string
     })
     .then(response => response.json())
     .then(data => {
         // console.log("Response data:", data);
         // console.log("🟢 Response dari server:", data);
-
         // Tampilkan SweetAlert sukses
         Swal.fire({
             icon: 'success',
