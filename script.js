@@ -1,5 +1,5 @@
 // Inisialisasi
-let minutes = 12;
+let minutes = 1;
 let seconds = 0;
 let question_page = 1;
 const question_last_page = 50;
@@ -182,11 +182,9 @@ function submitJawaban() {
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
-                // console.log("IQ dari backend sebelum redirect:", data.iq); // Debugging
-                if (typeof data.iq !== "undefined" && data.iq !== null) {
+                if (data.iq) {
                     window.location.href = `hasiltest.html?iq=${data.iq}`;
                 } else {
-                    console.error("IQ tidak tersedia, fallback ke hasiltest.html");
                     window.location.href = `hasiltest.html`;
                 }
             }
