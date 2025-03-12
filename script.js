@@ -179,15 +179,10 @@ function submitJawaban() {
             title: 'Tes Selesai!',
             text: 'Hasil tes IQ Anda akan segera tersedia.',
             confirmButtonText: "OK",
-        }).then((data) => {
-            if (data.isConfirmed) {
-                // Redirect ke halaman hasil + param score
-                if (data.score) {
-                    window.location.href = `hasiltest.html?score=${data.iq}`;
-                } else {
-                    // Jika 'data.score' tidak ada, fallback
-                    window.location.href = `hasiltest.html`;
-                }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log("Redirect dengan iq:", data.iq); // Debug
+                window.location.href = `hasiltest.html?iq=${data.iq}`;
             }
         });
     })
