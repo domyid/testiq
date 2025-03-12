@@ -179,7 +179,7 @@ function submitJawaban() {
             text: 'Hasil tes IQ Anda akan segera tersedia.',
             confirmButtonText: "OK",
         }).then((data) => {
-            if (result.isConfirmed) {
+            if (data.isConfirmed) {
                 // Redirect ke halaman hasil + param score
                 if (data.score) {
                     window.location.href = `hasiltest.html?score=${data.iq}`;
