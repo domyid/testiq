@@ -1,5 +1,5 @@
 // Inisialisasi
-let minutes = 1;
+let minutes = 12;
 let seconds = 0;
 let question_page = 1;
 const question_last_page = 50;
@@ -37,9 +37,10 @@ function displayQuestion() {
         questionTextElement.innerHTML = "<strong>Soal tidak tersedia.</strong>";
         return;
     }
-    // console.log(question)
+    // console.log(question.question)
     // Tampilkan teks soal
-    questionTextElement.innerHTML = htmlDecode(question.question.trim());
+    questionTextElement.innerHTML = (question.question);
+    // console.log(questionTextElement)
     // Tampilkan gambar jika ada
     if (question.image && question.image.trim() !== "") {
         questionImageContainer.innerHTML = `<img src="${question.image}" alt="Gambar Soal" style="max-width:100%; display:block;">`;
@@ -161,7 +162,7 @@ async function initNextQuestion() {
 // Fungsi untuk mengirim jawaban ke backend
 function submitJawaban() {
     // Debugging: tampilkan array jawaban di console
-    console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
+    // console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
 
     // Kirim array ke backend
     fetch(`${API_URL}/api/iq/score`, {
@@ -171,8 +172,8 @@ function submitJawaban() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Response data:", data); 
-        console.log("🟢 Response dari server:", data);
+        // console.log("Response data:", data);
+        // console.log("🟢 Response dari server:", data);
 
         // Tampilkan SweetAlert sukses
         Swal.fire({
@@ -182,7 +183,7 @@ function submitJawaban() {
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log("IQ dari backend sebelum redirect:", data.iq); // Debugging
+                // console.log("IQ dari backend sebelum redirect:", data.iq); // Debugging
                 if (typeof data.iq !== "undefined" && data.iq !== null) {
                     window.location.href = `hasiltest.html?iq=${data.iq}`;
                 } else {
