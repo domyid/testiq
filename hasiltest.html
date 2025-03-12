@@ -48,26 +48,26 @@
         <h1>Hasil IQ (Intelligence Quotient) Kamu!</h1>
         <p>
             Kamu telah selesai melakukan Tes IQ dan mendapatkan hasil IQ sebesar 
-            <span class="score" id="score">...</span>
+            <span class="score" id="iqValue">...</span>
         </p>
         <p>
             Yang dimana skor IQ tersebut tergolong kategori 
-            <span class="category" id="category">Tidak Tersedia</span>
+            <span class="category" id="iqCategory">Tidak Tersedia</span>
         </p>
         <p class="note">*Semakin tinggi skor, semakin tinggi pula kategori kecerdasan menurut standar umum.</p>
     </div>
 
     <script>
-        // Fungsi untuk mendapatkan parameter 'score' dari URL
+        // Fungsi untuk mendapatkan parameter dari URL
         function getParameterByName(name) {
             const url = new URL(window.location.href);
             return url.searchParams.get(name);
         }
 
-        // Baca param "score"
-        const scoreParam = getParameterByName("score");
+        // Baca param "iq"
+        const iqParam = getParameterByName("iq");
 
-        // Fungsi untuk mengklasifikasikan kategori skor
+        // Fungsi untuk mengklasifikasikan kategori
         function getCategory(score) {
             if (score >= 130) return "Sangat Superior";
             if (score >= 120) return "Superior";
@@ -77,25 +77,21 @@
             return "Sangat Kurang";
         }
 
-        // Proses jika param 'score' valid
-        const scoreElement = document.getElementById("score");
-        const categoryElement = document.getElementById("category");
+        const iqValueElement = document.getElementById("iqValue");
+        const iqCategoryElement = document.getElementById("iqCategory");
 
-        if (scoreParam !== null) {
-            const iqScore = parseInt(scoreParam, 10);
-            if (!isNaN(iqScore)) {
-                // Jika valid, tampilkan skor dan kategori
-                scoreElement.innerText = iqScore;
-                categoryElement.innerText = getCategory(iqScore);
+        if (iqParam !== null) {
+            const iqNumber = parseInt(iqParam, 10);
+            if (!isNaN(iqNumber)) {
+                iqValueElement.innerText = iqNumber;
+                iqCategoryElement.innerText = getCategory(iqNumber);
             } else {
-                // Jika param bukan angka
-                scoreElement.innerText = "...";
-                categoryElement.innerText = "Tidak Tersedia";
+                iqValueElement.innerText = "...";
+                iqCategoryElement.innerText = "Tidak Tersedia";
             }
         } else {
-            // Jika param 'score' tidak ada sama sekali
-            scoreElement.innerText = "...";
-            categoryElement.innerText = "Tidak Tersedia";
+            iqValueElement.innerText = "...";
+            iqCategoryElement.innerText = "Tidak Tersedia";
         }
     </script>
 
