@@ -6,7 +6,7 @@ const question_last_page = 50;
 let timerInterval;
 let currentQuestionId = "1";
 let question = null;
-let listJawaban = []; // <-- Gunakan array, bukan object
+let listJawaban = [];
 let isExpired = false;
 
 // API Endpoint
@@ -181,8 +181,13 @@ function submitJawaban() {
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log("Redirect dengan iq:", data.iq); // Debug
-                window.location.href = `hasiltest.html?iq=${data.iq}`;
+                console.log("IQ dari backend sebelum redirect:", data.iq); // Debugging
+                if (typeof data.iq !== "undefined" && data.iq !== null) {
+                    window.location.href = `hasiltest.html?iq=${data.iq}`;
+                } else {
+                    console.error("IQ tidak tersedia, fallback ke hasiltest.html");
+                    window.location.href = `hasiltest.html`;
+                }
             }
         });
     })

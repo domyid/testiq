@@ -60,9 +60,9 @@
     <script>
         // Fungsi untuk mendapatkan parameter dari URL
         function getParameterByName(name) {
-            const url = new URL(window.location.href);
-            return url.searchParams.get(name);
-        }
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }        
 
         // Baca param "iq"
         const iqParam = getParameterByName("iq");
