@@ -16,7 +16,7 @@ const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
 const loadingElement = document.getElementById('loading');
 const questionContainerElement = document.getElementById('question-container');
 const questionTextElement = document.getElementById('question-text');
-const questionImageContainer = document.getElementById('question-image-container');
+let questionImageContainer = document.getElementById('question-image-container');
 const jawabanContainer = document.getElementById('jawaban-container');
 const questionNumberElement = document.getElementById('question-number');
 const minutesElement = document.getElementById("minutes");
@@ -37,10 +37,9 @@ function displayQuestion() {
         questionTextElement.innerHTML = "<strong>Soal tidak tersedia.</strong>";
         return;
     }
-
+    // console.log(question)
     // Tampilkan teks soal
     questionTextElement.innerHTML = htmlDecode(question.question.trim());
-    console.log(question.image)
     // Tampilkan gambar jika ada
     if (question.image && question.image.trim() !== "") {
         questionImageContainer.innerHTML = `<img src="${question.image}" alt="Gambar Soal" style="max-width:100%; display:block;">`;
@@ -63,6 +62,8 @@ async function getQuestionById(id) {
         questionContainerElement.style.display = "none";
 
         const response = await fetch(`${API_URL}/api/iq/question/${id}`);
+        // console.log(response)
+        // console.log(response.id)
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
