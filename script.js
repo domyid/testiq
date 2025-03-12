@@ -170,6 +170,7 @@ function submitJawaban() {
     })
     .then(response => response.json())
     .then(data => {
+        console.log("Response data:", data); 
         console.log("🟢 Response dari server:", data);
 
         // Tampilkan SweetAlert sukses
