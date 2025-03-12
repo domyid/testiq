@@ -161,6 +161,7 @@ async function initNextQuestion() {
 
 // Fungsi untuk mengirim jawaban ke backend
 function submitJawaban() {
+    console.log("Final Score yang dikirim:", finalScore);
     // Debugging: tampilkan array jawaban di console
     // console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
 
@@ -185,6 +186,7 @@ function submitJawaban() {
         }).then((result) => {
             if (result.isConfirmed) {
                 if (data.iq) {
+                    console.log("URL yang akan diakses:", `hasiltest.html?iq=${data.iq}`);
                     window.location.href = `hasiltest.html?iq=${data.iq}`;
                     console.log(data.iq)
                     console.log("Redirecting ke:", `hasiltest.html?iq=${data.iq}`);
