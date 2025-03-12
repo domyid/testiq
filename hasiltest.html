@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Tes IQ - Jatidiri</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9ff;
+            color: #222;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #000;
+            margin-bottom: 20px;
+        }
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .category {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3be0;
+        }
+        .note {
+            font-size: 14px;
+            color: #777;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Hasil IQ (Intelligence Quotient) Kamu!</h1>
+        <p>
+            Kamu telah selesai melakukan Tes IQ dan mendapatkan hasil IQ sebesar 
+            <span class="score" id="score">...</span>
+        </p>
+        <p>
+            Yang dimana skor IQ tersebut tergolong kategori 
+            <span class="category" id="category">Tidak Tersedia</span>
+        </p>
+        <p class="note">*Semakin tinggi skor, semakin tinggi pula kategori kecerdasan menurut standar umum.</p>
+    </div>
+
+    <script>
+        // Fungsi untuk mendapatkan parameter 'score' dari URL
+        function getParameterByName(name) {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name);
+        }
+
+        // Baca param "score"
+        const scoreParam = getParameterByName("score");
+
+        // Fungsi untuk mengklasifikasikan kategori skor
+        function getCategory(score) {
+            if (score >= 130) return "Sangat Superior";
+            if (score >= 120) return "Superior";
+            if (score >= 110) return "Di Atas Rata-rata";
+            if (score >= 90)  return "Rata-rata";
+            if (score >= 80)  return "Kurang";
+            return "Sangat Kurang";
+        }
+
+        // Proses jika param 'score' valid
+        const scoreElement = document.getElementById("score");
+        const categoryElement = document.getElementById("category");
+
+        if (scoreParam !== null) {
+            const iqScore = parseInt(scoreParam, 10);
+            if (!isNaN(iqScore)) {
+                // Jika valid, tampilkan skor dan kategori
+                scoreElement.innerText = iqScore;
+                categoryElement.innerText = getCategory(iqScore);
+            } else {
+                // Jika param bukan angka
+                scoreElement.innerText = "...";
+                categoryElement.innerText = "Tidak Tersedia";
+            }
+        } else {
+            // Jika param 'score' tidak ada sama sekali
+            scoreElement.innerText = "...";
+            categoryElement.innerText = "Tidak Tersedia";
+        }
+    </script>
+
+</body>
+</html>

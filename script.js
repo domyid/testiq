@@ -180,10 +180,13 @@ function submitJawaban() {
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
-                // Arahkan ke halaman hasil
-                window.location.href = "hasiltest.html";
-                // Jika ingin mengirim parameter di URL, misalnya:
-                // window.location.href = `hasiltest.html?score=${data.score}`;
+                // Redirect ke halaman hasil + param score
+                if (data.score) {
+                    window.location.href = `hasiltest.html?score=${data.score}`;
+                } else {
+                    // Jika 'data.score' tidak ada, fallback
+                    window.location.href = `hasiltest.html`;
+                }
             }
         });
     })
