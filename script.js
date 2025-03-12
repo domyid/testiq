@@ -6,7 +6,7 @@ const question_last_page = 50;
 let timerInterval;
 let currentQuestionId = "1";
 let question = null;
-let listJawaban = [];
+let listJawaban = {}; // Pakai object agar key bisa dimulai dari 1
 let isExpired = false;
 
 // API Endpoint
@@ -21,12 +21,7 @@ const jawabanContainer = document.getElementById('jawaban-container');
 const questionNumberElement = document.getElementById('question-number');
 const minutesElement = document.getElementById("minutes");
 const secondsElement = document.getElementById("seconds");
-
-// Pastikan tombol ditemukan
 const nextButtonElement = document.getElementById('next-button');
-if (!nextButtonElement) {
-    console.error("❌ Error: Tombol 'Selanjutnya' tidak ditemukan! Periksa ID di HTML.");
-}
 
 // Fungsi decode HTML entities
 function htmlDecode(input) {
@@ -43,16 +38,21 @@ function displayQuestion() {
         return;
     }
 
+    // Tampilkan teks soal
     questionTextElement.innerHTML = htmlDecode(question.question.trim());
 
+    // Tampilkan gambar jika ada
     if (question.image && question.image.trim() !== "") {
         questionImageContainer.innerHTML = `<img src="${question.image}" alt="Gambar Soal" style="max-width:100%; display:block;">`;
     } else {
         questionImageContainer.innerHTML = "";
     }
 
+    // Ganti dengan input text untuk jawaban
     jawabanContainer.innerHTML = `
-        <input type="text" id="text-answer" class="text-answer-input" placeholder="Ketik jawaban Anda di sini..." style="width:100%; padding:10px; font-size:16px;">
+        <input type="text" id="text-answer" class="text-answer-input" 
+               placeholder="Ketik jawaban Anda di sini..." 
+               style="width:100%; padding:10px; font-size:16px;">
     `;
 }
 
@@ -128,16 +128,18 @@ async function initNextQuestion() {
         return;
     }
 
-    nextButtonElement.disabled = true;
-    listJawaban.push(selectedAnswer);
+    // Simpan jawaban ke object, dengan key = question_page
+    listJawaban[question_page] = selectedAnswer;
 
     question_page++;
 
+    // Jika sudah melebihi jumlah soal, kirim jawaban
     if (question_page > question_last_page) {
         submitJawaban();
         return;
     }
 
+    nextButtonElement.disabled = true;
     currentQuestionId = String(parseInt(currentQuestionId) + 1);
 
     try {
@@ -150,32 +152,19 @@ async function initNextQuestion() {
     }
 }
 
-// Fungsi untuk mengumpulkan jawaban
-function collectAnswers() {
-    return listJawaban;
-}
-
 // Fungsi untuk mengirim jawaban ke backend
 function submitJawaban() {
-    let collectedAnswers = collectAnswers();
-
-    console.log("✅ Jawaban yang dikumpulkan:", collectedAnswers);
-
-    if (collectedAnswers.length === 0) {
-        console.warn("⚠️ Peringatan: Tidak ada jawaban yang dikumpulkan.");
-        Swal.fire({
-            icon: 'warning',
-            title: 'Jawaban Kosong!',
-            text: 'Tidak ada jawaban yang dikumpulkan. Pastikan mengisi jawaban sebelum tes selesai.',
-            confirmButtonText: "OK",
-        });
-        return;
+    // Debugging: tampilkan jawaban dengan index 1-based
+    console.log("✅ Jawaban yang dikumpulkan (1-based index):");
+    for (let qNum in listJawaban) {
+        console.log(`${qNum}: ${listJawaban[qNum]}`);
     }
 
+    // Kirim ke backend
     fetch(`${API_URL}/api/iq/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers: collectedAnswers })
+        body: JSON.stringify({ answers: listJawaban })
     })
     .then(response => response.json())
     .then(data => {
@@ -190,13 +179,12 @@ function submitJawaban() {
     .catch(error => console.error("❌ Error submitting answers:", error));
 }
 
-// Pastikan semua elemen dan event listener terpasang setelah DOM selesai dimuat
-document.addEventListener("DOMContentLoaded", function () {
+// Saat dokumen siap
+document.addEventListener("DOMContentLoaded", function() {
     if (!nextButtonElement) {
-        console.error("❌ Error: Tombol 'Selanjutnya' tidak ditemukan di DOM setelah halaman dimuat!");
+        console.error("❌ Error: Tombol 'Selanjutnya' tidak ditemukan di DOM!");
         return;
     }
-
     nextButtonElement.addEventListener("click", initNextQuestion);
 
     getQuestionById(currentQuestionId);
