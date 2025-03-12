@@ -6,7 +6,7 @@ const question_last_page = 50;
 let timerInterval;
 let currentQuestionId = "1";
 let question = null;
-let listJawaban = {}; // Pakai object agar key bisa dimulai dari 1
+let listJawaban = []; // <-- Gunakan array, bukan object
 let isExpired = false;
 
 // API Endpoint
@@ -48,10 +48,10 @@ function displayQuestion() {
         questionImageContainer.innerHTML = "";
     }
 
-    // Ganti dengan input text untuk jawaban
+    // Gunakan input text untuk jawaban
     jawabanContainer.innerHTML = `
-        <input type="text" id="text-answer" class="text-answer-input" 
-               placeholder="Ketik jawaban Anda di sini..." 
+        <input type="text" id="text-answer" class="text-answer-input"
+               placeholder="Ketik jawaban Anda di sini..."
                style="width:100%; padding:10px; font-size:16px;">
     `;
 }
@@ -61,10 +61,13 @@ async function getQuestionById(id) {
     try {
         loadingElement.style.display = "flex";
         questionContainerElement.style.display = "none";
+
         const response = await fetch(`${API_URL}/api/iq/question/${id}`);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
         const data = await response.json();
         question = data;
+
         loadingElement.style.display = "none";
         questionContainerElement.style.display = "block";
         displayQuestion();
@@ -114,10 +117,12 @@ async function initNextQuestion() {
     let selectedAnswer = "";
     const textAnswer = document.getElementById("text-answer");
 
+    // Ambil nilai jawaban
     if (textAnswer) {
         selectedAnswer = textAnswer.value.trim();
     }
 
+    // Validasi jawaban kosong
     if (!selectedAnswer) {
         Swal.fire({
             icon: 'warning',
@@ -128,12 +133,12 @@ async function initNextQuestion() {
         return;
     }
 
-    // Simpan jawaban ke object, dengan key = question_page
-    listJawaban[question_page] = selectedAnswer;
+    // Masukkan jawaban ke dalam array
+    listJawaban.push(selectedAnswer);
 
     question_page++;
 
-    // Jika sudah melebihi jumlah soal, kirim jawaban
+    // Cek apakah sudah melebihi jumlah soal
     if (question_page > question_last_page) {
         submitJawaban();
         return;
@@ -154,17 +159,17 @@ async function initNextQuestion() {
 
 // Fungsi untuk mengirim jawaban ke backend
 function submitJawaban() {
-    // Debugging: tampilkan jawaban dengan index 1-based
-    console.log("✅ Jawaban yang dikumpulkan (1-based index):");
-    for (let qNum in listJawaban) {
-        console.log(`${qNum}: ${listJawaban[qNum]}`);
-    }
+    // Debugging: tampilkan array jawaban di console (1-based index saat menampilkan)
+    console.log("✅ Jawaban yang dikumpulkan (Array):");
+    listJawaban.forEach((ans, idx) => {
+        console.log(`${idx + 1}: ${ans}`);
+    });
 
-    // Kirim ke backend
+    // Kirim array ke backend
     fetch(`${API_URL}/api/iq/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers: listJawaban })
+        body: JSON.stringify(listJawaban) // Langsung array
     })
     .then(response => response.json())
     .then(data => {
