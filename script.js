@@ -6,7 +6,7 @@ const question_last_page = 50;
 let timerInterval;
 let currentQuestionId = "1";
 let question = null;
-// let listJawaban = [];
+let listJawaban = [];
 let isExpired = false;
 let finalScore = 0;
 
@@ -102,7 +102,10 @@ function startTimer() {
                 title: 'Waktu habis.',
                 text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
-            }).then(() => submitJawaban());
+            }).then(() => {
+                kirimJawaban();
+                submitJawaban();
+            });
             return;
         }
         if (seconds === 0) {
@@ -159,11 +162,26 @@ async function initNextQuestion() {
     }
 }
 
+function kirimJawaban() {
+    console.log("Mengirim jawaban:", listJawaban);
+
+    fetch(`${API_URL}/api/iq/score`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ answers: listJawaban })
+    });
+
+    const data = response.json();
+    console.log("Hasil konversi dari backend:", data);
+
+    alert(`Jawaban setelah dikonversi: ${JSON.stringify(data.answers)}`);
+}
+
 // Fungsi untuk mengirim jawaban ke backend
 function submitJawaban() {
     console.log("Final Score yang dikirim:", finalScore);
     // Debugging: tampilkan array jawaban di console
-    // console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
+    console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
 
     // Kirim array ke backend
     fetch(`${API_URL}/api/iq/score`, {
