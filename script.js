@@ -102,12 +102,7 @@ function startTimer() {
                 title: 'Waktu habis.',
                 text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
-            }).then(() => {
-                // console.log("Mengirim jawaban:", userAnswers);
-                // console.log("Final Score yang dikirim:", finalScore);
-                kirimJawaban();
-                submitJawaban();
-            });
+            }).then(() => kirimJawaban());
             return;
         }
         if (seconds === 0) {
@@ -167,7 +162,7 @@ async function initNextQuestion() {
 function kirimJawaban() {
     console.log("Mengirim jawaban:", listJawaban);
 
-    fetch(`${API_URL}/api/iq/score`, {
+    fetch(`${API_URL}/api/iq/answer`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ answers: listJawaban })
@@ -205,6 +200,7 @@ function submitJawaban() {
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
+                submitJawaban();
                 if (data.iq) {
                     console.log("URL yang akan diakses:", `hasiltest.html?iq=${data.iq}`);
                     window.location.href = `hasiltest.html?iq=${data.iq}`;
