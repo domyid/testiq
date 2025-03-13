@@ -85,28 +85,6 @@ async function getQuestionById(id) {
     }
 }
 
-function hitungFinalScore() {
-    let score = 0;
-    listJawaban.forEach(answer => {
-        score += parseInt(answer) || 0; // Pastikan konversi ke angka
-    });
-    return score;
-}
-
-finalScore = hitungFinalScore();
-console.log("Final Score yang dikirim:", finalScore);
-
-if (finalScore === undefined || finalScore === null || finalScore.length === 0) {
-    console.error("Final Score tidak valid!");
-} else {
-    // Kirim ke backend
-    fetch(`${API_URL}/api/iq/score`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ score: String(finalScore) })
-    });
-}
-
 // Fungsi untuk memperbarui tampilan timer
 function updateTimerDisplay() {
     minutesElement.innerText = String(minutes).padStart(2, '0');
@@ -125,8 +103,8 @@ function startTimer() {
                 text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
             }).then(() => {
-                kirimJawaban();
-                submitJawaban();
+                // kirimJawaban();
+                // submitJawaban();
             });
             return;
         }
@@ -138,6 +116,61 @@ function startTimer() {
         }
         updateTimerDisplay();
     }, 1000);
+}
+
+async function submitJawaban() {
+    console.log("Final Score yang dikirim:", finalScore);
+    console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
+    // Ambil jawaban pengguna dari localStorage (sesuaikan dengan implementasi)
+    try {
+        // 1. Kirim jawaban ke backend
+        let answerResponse = await fetch(`${API_URL}/api/iq/answer`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ answers: listJawaban })
+        });
+
+        let answerData = await answerResponse.json();
+        if (!answerResponse.ok) throw new Error("Gagal mengonversi jawaban!");
+
+        console.log("Jawaban yang telah dikonversi:", answerData.answers);
+
+        // 2. Kirim skor ke backend
+        let scoreResponse = await fetch(`${API_URL}/api/iq/score`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ score: answerData.answers.length }) // Contoh: jumlah jawaban benar sebagai skor
+        });
+
+        let scoreData = await scoreResponse.json();
+        if (!scoreResponse.ok) throw new Error("Gagal mendapatkan skor IQ!");
+
+        console.log("Hasil Tes:", scoreData);
+
+        // 3. Tampilkan hasil dan redirect
+        Swal.fire({
+            icon: 'success',
+            title: 'Tes Selesai!',
+            text: 'Hasil tes IQ Anda akan segera tersedia.',
+            confirmButtonText: "OK",
+        }).then(() => {
+            let resultUrl = `hasiltest.html`;
+            if (scoreData.iq) {
+                resultUrl += `?iq=${scoreData.iq}`;
+            }
+            console.log("Redirecting ke:", resultUrl);
+            window.location.href = resultUrl;
+        });
+
+    } catch (error) {
+        console.error("❌ Error:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Terjadi Kesalahan",
+            text: "Gagal mengirim jawaban. Silakan coba lagi.",
+            confirmButtonText: "OK",
+        });
+    }
 }
 
 // Fungsi untuk ke soal berikutnya
@@ -182,61 +215,6 @@ async function initNextQuestion() {
     } finally {
         nextButtonElement.disabled = false;
     }
-}
-
-function kirimJawaban() {
-    console.log("Mengirim jawaban:", listJawaban);
-
-    fetch(`${API_URL}/api/iq/answer`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ answers: listJawaban })
-    });
-
-    // const data = response.json();
-    // console.log("Hasil konversi dari backend:", data);
-
-    // alert(`Jawaban setelah dikonversi: ${JSON.stringify(data.answers)}`);
-}
-
-// Fungsi untuk mengirim jawaban ke backend
-function submitJawaban() {
-    console.log("Final Score yang dikirim:", finalScore);
-    // Debugging: tampilkan array jawaban di console
-    console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
-
-    // Kirim array ke backend
-    fetch(`${API_URL}/api/iq/score`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ score: String(finalScore) }) // Kirim 'score' sebagai string
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Mengirim score:", finalScore);
-        console.log("Response data:", data);
-        console.log("🟢 Response dari server:", data);
-        console.log("Response dari backend:", data); // Pastikan ada iq
-        // Tampilkan SweetAlert sukses
-        Swal.fire({
-            icon: 'success',
-            title: 'Tes Selesai!',
-            text: 'Hasil tes IQ Anda akan segera tersedia.',
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                if (data.iq) {
-                    console.log("URL yang akan diakses:", `hasiltest.html?iq=${data.iq}`);
-                    window.location.href = `hasiltest.html?iq=${data.iq}`;
-                    console.log(data.iq)
-                    console.log("Redirecting ke:", `hasiltest.html?iq=${data.iq}`);
-                } else {
-                    window.location.href = `hasiltest.html`;
-                }
-            }
-        });
-    })
-    .catch(error => console.error("❌ Error submitting answers:", error));
 }
 
 // Saat dokumen siap
