@@ -128,7 +128,7 @@ async function submitJawaban() {
     }
 
     console.log("Final Score yang dikirim:", finalScore);
-    finalScore = answerData.answers.length; // Pastikan finalScore dihitung dengan benar
+    // finalScore = answerData.answers.length; // Pastikan finalScore dihitung dengan benar
     console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
     // Ambil jawaban pengguna dari localStorage (sesuaikan dengan implementasi)
     try {
