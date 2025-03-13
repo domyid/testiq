@@ -4,93 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hasil Tes IQ</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
+
+        async function getIQScore(score) {
+            try {
+                const response = await fetch(`${API_URL}/api/iqscoring`);
+                if (!response.ok) throw new Error("Gagal mengambil data scoring.");
+                
+                const data = await response.json();
+                const matchedIQ = data.find(item => item.score === String(score));
+                return matchedIQ ? matchedIQ.iq : "Tidak tersedia";
+            } catch (error) {
+                console.error("Error fetching IQ score:", error);
+                return "Tidak tersedia";
+            }
+        }
+
+        async function loadResults() {
+            try {
+                const response = await fetch(`${API_URL}/api/iq/score`);
+                if (!response.ok) throw new Error("Gagal mengambil hasil tes IQ.");
+                
+                const result = await response.json();
+                const score = result.score || "Tidak tersedia";
+                const iq = await getIQScore(score);
+
+                document.getElementById("score").innerText = score;
+                document.getElementById("iq").innerText = iq;
+            } catch (error) {
+                console.error("Error fetching test results:", error);
+                document.getElementById("score").innerText = "Tidak tersedia";
+                document.getElementById("iq").innerText = "Tidak tersedia";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadResults);
+    </script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        #container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-        }
-        #loading {
-            display: none;
-            font-size: 18px;
-            color: #555;
-        }
-        #result {
-            display: none;
-        }
-        .highlight {
-            font-weight: bold;
-            font-size: 24px;
-            color: #007bff;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { max-width: 400px; margin: 50px auto; padding: 20px; border-radius: 10px; background: #f9f9f9; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); }
+        h2 { font-size: 24px; }
+        p { font-size: 18px; }
+        .highlight { font-weight: bold; color: blue; }
     </style>
 </head>
 <body>
-
-<div id="container">
-    <h1>Hasil Tes IQ Anda</h1>
-    <p id="loading">Memuat hasil...</p>
-    <div id="result">
-        <p>Score Anda: <span id="score" class="highlight">-</span></p>
-        <p>Level IQ: <span id="iq-level" class="highlight">-</span></p>
+    <div class="container">
+        <h2>Hasil Tes IQ Anda</h2>
+        <p>Score Anda: <span id="score" class="highlight">Tidak tersedia</span></p>
+        <p>Level IQ: <span id="iq" class="highlight">Tidak tersedia</span></p>
     </div>
-</div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const iqValue = urlParams.get("iq");
-
-        const loadingElement = document.getElementById("loading");
-        const resultElement = document.getElementById("result");
-        const scoreElement = document.getElementById("score");
-        const iqLevelElement = document.getElementById("iq-level");
-
-        loadingElement.style.display = "block"; // Tampilkan loading
-
-        // Simulasi loading sebelum menampilkan hasil
-        setTimeout(() => {
-            loadingElement.style.display = "none";
-            resultElement.style.display = "block";
-
-            if (iqValue) {
-                scoreElement.textContent = iqValue; // Tampilkan skor IQ
-                iqLevelElement.textContent = getIQLevel(iqValue); // Hitung level berdasarkan skor
-
-                // Simpan hasil ke localStorage untuk referensi nanti
-                localStorage.setItem("iqResult", JSON.stringify({ iq: iqValue, level: getIQLevel(iqValue) }));
-            } else {
-                scoreElement.textContent = "Tidak tersedia";
-                iqLevelElement.textContent = "Tidak tersedia";
-            }
-        }, 2000); // Delay 2 detik untuk efek loading
-    });
-
-    // Fungsi untuk mengonversi skor IQ menjadi kategori level
-    function getIQLevel(score) {
-        let iq = parseInt(score);
-        if (iq >= 130) return "Sangat Superior";
-        if (iq >= 120) return "Superior";
-        if (iq >= 110) return "Di Atas Rata-rata";
-        if (iq >= 90) return "Rata-rata";
-        if (iq >= 80) return "Di Bawah Rata-rata";
-        if (iq >= 70) return "Borderline";
-        return "Defisit Kognitif";
-    }
-</script>
-
 </body>
 </html>

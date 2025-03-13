@@ -1,3 +1,5 @@
+import {getCookie} from "https://cdn.jsdelivr.net/gh/jscroot/cookie@0.0.1/croot.js";
+
 // Inisialisasi
 let minutes = 1;
 let seconds = 0;
@@ -116,6 +118,15 @@ function startTimer() {
 }
 
 async function submitJawaban() {
+    let token = getCookie("login"); // Sesuaikan dengan nama cookie token Anda
+
+    if (!token) {
+        console.warn("❌ Token tidak ditemukan! Redirect ke halaman login...");
+        window.location.href = "index.html"; // Sesuaikan dengan halaman login Anda
+    } else {
+        console.log("✅ Token ditemukan:", token);
+    }
+
     console.log("Final Score yang dikirim:", finalScore);
     console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
     // Ambil jawaban pengguna dari localStorage (sesuaikan dengan implementasi)
