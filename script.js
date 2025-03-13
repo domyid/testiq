@@ -171,7 +171,7 @@ function kirimJawaban() {
         body: JSON.stringify({ answers: listJawaban })
     });
 
-    const data = response.json();
+    // const data = response.json();
     console.log("Hasil konversi dari backend:", data);
 
     alert(`Jawaban setelah dikonversi: ${JSON.stringify(data.answers)}`);
