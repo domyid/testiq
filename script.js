@@ -102,7 +102,10 @@ function startTimer() {
                 title: 'Waktu habis.',
                 text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
-            }).then(() => kirimJawaban());
+            }).then(() => {
+                kirimJawaban();
+                submitJawaban();
+            });
             return;
         }
         if (seconds === 0) {
@@ -200,7 +203,6 @@ function submitJawaban() {
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
-                submitJawaban();
                 if (data.iq) {
                     console.log("URL yang akan diakses:", `hasiltest.html?iq=${data.iq}`);
                     window.location.href = `hasiltest.html?iq=${data.iq}`;
