@@ -85,6 +85,28 @@ async function getQuestionById(id) {
     }
 }
 
+function hitungFinalScore() {
+    let score = 0;
+    userAnswers.forEach(answer => {
+        score += parseInt(answer) || 0; // Pastikan konversi ke angka
+    });
+    return score;
+}
+
+finalScore = hitungFinalScore();
+console.log("Final Score yang dikirim:", finalScore);
+
+if (finalScore === undefined || finalScore === null || finalScore.length === 0) {
+    console.error("Final Score tidak valid!");
+} else {
+    // Kirim ke backend
+    fetch(`${API_URL}/api/iq/score`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ score: String(finalScore) })
+    });
+}
+
 // Fungsi untuk memperbarui tampilan timer
 function updateTimerDisplay() {
     minutesElement.innerText = String(minutes).padStart(2, '0');
