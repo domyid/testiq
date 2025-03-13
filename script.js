@@ -172,9 +172,9 @@ function kirimJawaban() {
     });
 
     // const data = response.json();
-    console.log("Hasil konversi dari backend:", data);
+    // console.log("Hasil konversi dari backend:", data);
 
-    alert(`Jawaban setelah dikonversi: ${JSON.stringify(data.answers)}`);
+    // alert(`Jawaban setelah dikonversi: ${JSON.stringify(data.answers)}`);
 }
 
 // Fungsi untuk mengirim jawaban ke backend
