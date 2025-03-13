@@ -87,7 +87,7 @@ async function getQuestionById(id) {
 
 function hitungFinalScore() {
     let score = 0;
-    userAnswers.forEach(answer => {
+    listJawaban.forEach(answer => {
         score += parseInt(answer) || 0; // Pastikan konversi ke angka
     });
     return score;
