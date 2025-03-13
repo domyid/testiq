@@ -44,7 +44,7 @@
 </head>
 <body>
 
-    <div class="container">
+    <!-- <div class="container">
         <h1>Hasil IQ (Intelligence Quotient) Kamu!</h1>
         <p>
             Kamu telah selesai melakukan Tes IQ dan mendapatkan hasil IQ sebesar 
@@ -55,9 +55,16 @@
             <span class="category" id="iqCategory">Tidak Tersedia</span>
         </p>
         <p class="note">*Semakin tinggi skor, semakin tinggi pula kategori kecerdasan menurut standar umum.</p>
-    </div>
+    </div> -->
 
-    <script>
+    <div id="result">
+        <h2>Hasil Tes IQ</h2>
+        <p id="score">Score: -</p>
+        <p id="iq">IQ Level: -</p>
+    </div>
+    
+
+    <!-- <script>
         // Fungsi untuk mendapatkan parameter dari URL
         function getParameterByName(name) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -95,7 +102,7 @@
             iqValueElement.innerText = "...";
             iqCategoryElement.innerText = "Tidak Tersedia";
         }
-    </script>
-
+    </script> -->
+    <script src="script.js"></script>
 </body>
 </html>
