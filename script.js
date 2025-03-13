@@ -103,8 +103,8 @@ function startTimer() {
                 text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
             }).then(() => {
-                console.log("Mengirim jawaban:", userAnswers);
-                console.log("Final Score yang dikirim:", finalScore);
+                // console.log("Mengirim jawaban:", userAnswers);
+                // console.log("Final Score yang dikirim:", finalScore);
                 kirimJawaban();
                 submitJawaban();
             });
