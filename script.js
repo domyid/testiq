@@ -128,6 +128,7 @@ async function submitJawaban() {
     }
 
     console.log("Final Score yang dikirim:", finalScore);
+    finalScore = answerData.answers.length; // Pastikan finalScore dihitung dengan benar
     console.log("✅ Jawaban yang dikumpulkan (Array):", listJawaban);
     // Ambil jawaban pengguna dari localStorage (sesuaikan dengan implementasi)
     try {
@@ -142,19 +143,23 @@ async function submitJawaban() {
         if (!answerResponse.ok) throw new Error("Gagal mengonversi jawaban!");
 
         console.log("Jawaban yang telah dikonversi:", answerData.answers);
-
+// Pastikan finalScore berupa angka
+if (isNaN(finalScore) || finalScore <= 0) {
+    console.error("Final Score tidak valid:", finalScore);
         // 2. Kirim skor ke backend
+} else {
         let scoreResponse = await fetch(`${API_URL}/api/iq/score`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ score: answerData.answers.length }) // Contoh: jumlah jawaban benar sebagai skor
+            body: JSON.stringify({ score: finalScore }) // Contoh: jumlah jawaban benar sebagai skor
         });
 
         let scoreData = await scoreResponse.json();
+        console.log("Response dari server:", scoreData);
         if (!scoreResponse.ok) throw new Error("Gagal mendapatkan skor IQ!");
 
         console.log("Hasil Tes:", scoreData);
-
+    }
         // 3. Tampilkan hasil dan redirect
         Swal.fire({
             icon: 'success',
