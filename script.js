@@ -8,7 +8,7 @@ let currentQuestionId = "1";
 let question = null;
 let listJawaban = [];
 let isExpired = false;
-let finalScore = 0;
+let finalScore = [];
 
 // API Endpoint
 const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
@@ -103,6 +103,8 @@ function startTimer() {
                 text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
             }).then(() => {
+                console.log("Mengirim jawaban:", userAnswers);
+                console.log("Final Score yang dikirim:", finalScore);
                 kirimJawaban();
                 submitJawaban();
             });
@@ -140,7 +142,7 @@ async function initNextQuestion() {
     }
 
     // Masukkan jawaban ke dalam array
-    // listJawaban.push(selectedAnswer);
+    listJawaban.push(selectedAnswer);
 
     question_page++;
     // Cek apakah sudah melebihi jumlah soal
