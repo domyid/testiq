@@ -102,10 +102,7 @@ function startTimer() {
                 title: 'Waktu habis.',
                 text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
-            }).then(() => {
-                // kirimJawaban();
-                // submitJawaban();
-            });
+            }).then(() => submitJawaban());
             return;
         }
         if (seconds === 0) {
