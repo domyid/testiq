@@ -126,19 +126,28 @@ async function processResults() {
     let token = getCookie("login");
 
     if (!token) {
-        console.warn("❌ Token tidak ditemukan! Redirect ke halaman login...");
-        window.location.href = "index.html";
+        console.warn("❌ Token tidak ditemukan! Login lalu ke do.my.id/testiq");
+        window.location.href = "do.my.id";
         return;
     }
 
     try {
+        // [NEW] Ambil nama pengguna dari token (jika ada parsing JWT, gunakan di backend)
+        let userResponse = await fetch(`${API_URL}/api/iq/user`, {
+            method: "GET",
+            headers: { "login": token }
+        });
+
+        let userData = await userResponse.json();
+        let userName = userData.name || "Anonim"; // Gunakan nama dari token, default ke 'Anonim'
+
         let response = await fetch(`${API_URL}/api/iq/answer`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "login": token
             },
-            body: JSON.stringify({ name: "Pengguna", answers: listJawaban })
+            body: JSON.stringify({ name: userName, answers: listJawaban }) // [FIX] Gunakan nama pengguna asli
         });
 
         let data = await response.json();
