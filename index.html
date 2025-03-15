@@ -212,7 +212,7 @@
             continueButton.addEventListener('click', function() {
                 if (agreementCheckbox.checked) {
                     // Simpan status persetujuan di localStorage
-                    localStorage.setItem('privacyAgreed', 'true');
+                    localStorage.setItem('privacyAgreed', 'isDone');
                     
                     // Redirect ke halaman test
                     window.location.href = 'instruksi.html';

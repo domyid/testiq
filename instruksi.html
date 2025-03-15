@@ -246,12 +246,22 @@
         <!-- Slide 3 -->
         <div class="slide" id="slide3">
             <div class="slide-content">
-                <p>Sebelum melakukan test ini, cobalah untuk menjawab contoh soal berikut:</p>
+                <p>Sebelum melakukan test ini, bacalah contoh soal berikut:</p>
                 <div class="sample-question">
-                    <p>Contoh: Manakah yang tidak termasuk dalam kelompok?</p>
-                    <p>A. Apel &nbsp; B. Jeruk &nbsp; C. Pisang &nbsp; D. Kentang &nbsp; E. Mangga</p>
-                    <p>Untuk memasukkan jawaban yang benar adalah D.</p>
-                </div>
+                    <div class="example-slide">
+                        <p><strong>Contoh 1:</strong> Menuai adalah lawan kata dari?</p>
+                        <p>1. Mendapat <br> 2. Bersorak <br> 3. Melanjutkan <br> 4. Berada <br> 5. Menabur</p>
+                        <p>Jawaban yang benar adalah "Menabur". Maka, isi angka 5 pada form jawaban</p>
+                        <label for="jawaban1">Masukkan jawaban Anda:</label>
+                        <input type="text" id="jawaban1" name="jawaban1" required>
+                    </div>
+                    
+                    <div class="example-slide">
+                        <p><strong>Contoh 2:</strong> Harga setiap kotak pada paper clip adalah 23 rupiah. Berapa harga 4 kotak?</p>
+                        <p>Jawabannya adalah Rp. 92 Maka, isi jawaban "Rp. 92" pada form jawaban</p>
+                        <label for="jawaban2">Masukkan jawaban Anda:</label>
+                        <input type="text" id="jawaban2" name="jawaban2" required>
+                    </div>
             </div>
             <div class="navigation">
                 <button class="back" onclick="prevSlide()">Kembali</button>
@@ -311,7 +321,7 @@
                 icon: 'info',
                 confirmButtonText: 'Mulai Sekarang',
                 confirmButtonColor: '#3498db',
-                timer: 3000,
+                timer: 2000,
                 timerProgressBar: true,
                 allowOutsideClick: false,
                 allowEscapeKey: false,
