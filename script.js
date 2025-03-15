@@ -8,7 +8,7 @@ const question_last_page = 50;
 let timerInterval;
 let currentQuestionId = "1";
 let question = null;
-// let listJawaban = [];
+let listJawaban = [];
 let isExpired = false;
 let finalScore = [];
 
@@ -104,6 +104,8 @@ function startTimer() {
                 title: 'Waktu habis.',
                 text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
                 confirmButtonText: "OK",
+            }).then(() => {
+                processResults();
             });
             return;
         }
@@ -117,32 +119,33 @@ function startTimer() {
     }, 1000);
 }
 
-// [NEW] Fungsi untuk mengirim jawaban ke API POST `/api/iq/answer`
-async function submitIQTest(listJawaban) {
-    let token = getCookie("login"); // Ambil token login dari cookie
+// [NEW] Fungsi untuk memproses hasil setelah submit
+async function processResults() {
+    console.log("📌 Mengirim jawaban pengguna:", listJawaban);
+
+    let token = getCookie("login");
 
     if (!token) {
         console.warn("❌ Token tidak ditemukan! Redirect ke halaman login...");
-        window.location.href = "index.html"; // Redirect jika token tidak ada
+        window.location.href = "index.html";
         return;
     }
 
     try {
-        // Kirim jawaban ke backend
         let response = await fetch(`${API_URL}/api/iq/answer`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "login": token // Kirim token login di header
+                "login": token
             },
-            body: JSON.stringify({ name: "Pengguna", answers: listJawaban }) // Ganti 'Pengguna' dengan nama dari token jika tersedia
+            body: JSON.stringify({ name: "Pengguna", answers: listJawaban })
         });
 
         let data = await response.json();
         if (!response.ok) throw new Error(`Gagal menyimpan hasil tes! ${data.error}`);
 
         console.log("✅ Jawaban berhasil dikirim:", data);
-        return data; // Kembalikan hasil untuk ditampilkan
+        window.location.href = "hasiltest.html";
 
     } catch (error) {
         console.error("❌ Error saat mengirim jawaban:", error);
@@ -150,72 +153,30 @@ async function submitIQTest(listJawaban) {
     }
 }
 
-// [NEW] Fungsi untuk mendapatkan IQ dari skor
-async function getIQScore(score) {
-    try {
-        const response = await fetch(`${API_URL}/api/iqscoring`);
-        if (!response.ok) throw new Error("Gagal mengambil data scoring.");
-
-        const data = await response.json();
-        const matchedIQ = data.find(item => item.score === String(score));
-        return matchedIQ ? matchedIQ.iq : "Tidak tersedia";
-
-    } catch (error) {
-        console.error("Error fetching IQ score:", error);
-        return "Tidak tersedia";
-    }
-}
-
-// [NEW] Fungsi untuk memproses hasil setelah submit
-async function processResults(listJawaban) {
-    let result = await submitIQTest(listJawaban); // Kirim jawaban & dapatkan hasil
-
-    if (result && result.score) {
-        const iq = await getIQScore(result.score); // Ambil level IQ berdasarkan skor
-
-        document.getElementById("score").innerText = result.score;
-        document.getElementById("iq").innerText = iq;
-
-        console.log("✅ Hasil tes berhasil ditampilkan di halaman.");
-    }
-}
-
-// [NEW] Fungsi untuk memulai tes dan menyimpan jawaban
-async function startIQTest() {
-    let listJawaban = []; // Contoh jawaban (seharusnya dikumpulkan dari UI pengguna)
-    console.log("📌 Jawaban pengguna:", listJawaban);
-
-    await processResults(listJawaban);
-}
-
 // Fungsi untuk ke soal berikutnya
 async function initNextQuestion() {
     let selectedAnswer = "";
     const textAnswer = document.getElementById("text-answer");
 
-    // Ambil nilai jawaban
     if (textAnswer) {
         selectedAnswer = textAnswer.value.trim();
     }
 
-    // Validasi jawaban kosong
     if (!selectedAnswer) {
         Swal.fire({
-            icon: 'warning',
-            title: 'Jawaban Kosong!',
-            text: 'Silakan isi jawaban sebelum lanjut.',
+            icon: "warning",
+            title: "Jawaban Kosong!",
+            text: "Silakan isi jawaban sebelum lanjut.",
             confirmButtonText: "OK",
         });
         return;
     }
 
-    // Masukkan jawaban ke dalam array
     listJawaban.push(selectedAnswer);
 
     question_page++;
-    // Cek apakah sudah melebihi jumlah soal
     if (question_page > question_last_page) {
-        submitJawaban();
+        processResults();
         return;
     }
 
@@ -240,8 +201,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     nextButtonElement.addEventListener("click", initNextQuestion);
 
-    console.log("✅ Halaman dimuat, memulai pengiriman tes...");
-    startIQTest();
+
     getQuestionById(currentQuestionId);
     startTimer();
     updateTimerDisplay();
