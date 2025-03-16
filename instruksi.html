@@ -13,27 +13,92 @@
         }
         
         body {
-            background-color: #f5f5f5;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background-color: #f0f8ff;
         }
         
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            margin-top: 50px;
-            margin-bottom: 30px;
+            max-width: 500px; 
+            margin: 50px auto; 
+            padding: 20px; 
+            border-radius: 10px; 
+            background: #ffffff; 
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
         }
-        
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        /* Pop-up */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+        .popup h2 {
+            font-size: 20px;
+            color: #333;
+        }
+        .popup p {
+            font-size: 18px;
+            color: #555;
+        }
+        .popup input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .popup .nav-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .popup .close-btn {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            color: black;
+            border: none;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .popup .close-btn:hover {
+            background-color: darkred;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }        
         header {
             text-align: center;
             margin-bottom: 30px;
@@ -173,7 +238,7 @@
         
         .close-btn {
             position: absolute;
-            top: 10px;
+            top: 20px;
             right: 10px;
             background: none;
             border: none;
@@ -246,26 +311,35 @@
         <!-- Slide 3 -->
         <div class="slide" id="slide3">
             <div class="slide-content">
-                <p>Sebelum melakukan test ini, bacalah contoh soal berikut:</p>
-                <div class="sample-question">
-                    <div class="example-slide">
-                        <p><strong>Contoh 1:</strong> Menuai adalah lawan kata dari?</p>
-                        <p>1. Mendapat <br> 2. Bersorak <br> 3. Melanjutkan <br> 4. Berada <br> 5. Menabur</p>
-                        <p>Jawaban yang benar adalah "Menabur". Maka, isi angka 5 pada form jawaban</p>
-                        <label for="jawaban1">Masukkan jawaban Anda:</label>
-                        <input type="text" id="jawaban1" name="jawaban1" required>
-                    </div>
-                    
-                    <div class="example-slide">
-                        <p><strong>Contoh 2:</strong> Harga setiap kotak pada paper clip adalah 23 rupiah. Berapa harga 4 kotak?</p>
-                        <p>Jawabannya adalah Rp. 92 Maka, isi jawaban "Rp. 92" pada form jawaban</p>
-                        <label for="jawaban2">Masukkan jawaban Anda:</label>
-                        <input type="text" id="jawaban2" name="jawaban2" required>
-                    </div>
-            </div>
+    <div class="container">
+        <p>Sebelum melakukan tes ini, bacalah contoh soal berikut:</p>
+        <button class="btn" id="openPopup">Lihat Soal</button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Pop-up Contoh Soal -->
+    <div class="popup" id="popup">
+        <!-- <button class="btn close-btn" id="closePopup">Tutup</button> -->
+        <h2>Perhatikan satu contoh pertanyaan yang terisi dengan benar</h2>
+        <div id="question-container">
+            <p><strong>Contoh 1:</strong> Menuai adalah lawan kata dari?</p>
+            <p>1. Mendapat <br> 2. Bersorak <br> 3. Melanjutkan <br> 4. Berada <br> 5. Menabur</p>
+            <p><span style="color: red;">❗ Jawaban yang benar adalah "Menabur". Maka, isi angka 5 pada form jawaban</span></p>
+            <label for="jawaban1">Masukkan jawaban Anda:</label>
+            <input type="text" id="jawaban1" name="jawaban1" required>
+        </div>
+        
+        <div class="nav-buttons">
+            <button class="btn" id="prevQuestion" disabled>◀ Kembali</button>
+            <button class="btn close-btn" id="closePopup">Tutup</button>
+            <button class="btn" id="nextQuestion">Selanjutnya ▶</button>
+        </div>
+    </div>
             <div class="navigation">
                 <button class="back" onclick="prevSlide()">Kembali</button>
-                <button onclick="startTest()">Mulai Test</button>
+                <!-- <button onclick="startTest()">Mulai Test</button> -->
             </div>
         </div>
         
@@ -313,7 +387,108 @@
         function goToSlide(index) {
             showSlide(index);
         }
+        document.addEventListener("DOMContentLoaded", function () {
+            const popup = document.getElementById("popup");
+            const overlay = document.getElementById("overlay");
+            const openPopup = document.getElementById("openPopup");
+            const closePopup = document.getElementById("closePopup");
+            const prevQuestion = document.getElementById("prevQuestion");
+            const nextQuestion = document.getElementById("nextQuestion");
+            const questionContainer = document.getElementById("question-container");
+
+            if (!popup || !overlay || !openPopup || !closePopup || !prevQuestion || !nextQuestion) {
+                console.error("❌ Error: Elemen tidak ditemukan di DOM!");
+                return;
+            }
+
+            let currentQuestion = 0;
+
+            const questions = [
+                {
+                    text: "<strong>Contoh 1:</strong> Menuai adalah lawan kata dari?",
+                    choices: "1. Mendapat <br> 2. Bersorak <br> 3. Melanjutkan <br> 4. Berada <br> 5. Menabur",
+                    correct: "❗ Jawaban yang benar adalah 'Menabur'. Maka, isi angka 5 pada form jawaban",
+                    inputLabel: "Masukkan jawaban Anda:",
+                    inputId: "jawaban1"
+                },
+                {
+                    text: "<strong>Contoh 2:</strong> Harga setiap kotak paper clip adalah 23 rupiah. Berapa harga 4 kotak?",
+                    choices: "❗ Jawabannya adalah Rp. 92. Maka, isi angka 'Rp. 92' pada form jawaban",
+                    correct: "",
+                    inputLabel: "Masukkan jawaban Anda:",
+                    inputId: "jawaban2"
+                }
+            ];
+
+            function updateQuestion() {
+                let q = questions[currentQuestion];
+                questionContainer.innerHTML = `
+                    <p><strong>${q.text}</strong></p>
+                    <p>${q.choices}</p>
+                    <p style="color: red;">${q.correct}</p>
+                    <label for="${q.inputId}">${q.inputLabel}</label>
+                    <input type="text" id="${q.inputId}" name="${q.inputId}" required>
+                `;
+            
+                prevQuestion.disabled = currentQuestion === 0;
+            
+                if (currentQuestion === questions.length - 1) {
+                    // Jika ini adalah soal terakhir (Contoh 2), ubah tombol "Selanjutnya" menjadi "Mulai Test"
+                    nextQuestion.textContent = "Mulai Test";
+                    nextQuestion.removeEventListener("click", goToNextQuestion); // Hapus event sebelumnya
+                    nextQuestion.addEventListener("click", function () {
+                        startTest(); // Pastikan test hanya dimulai setelah tombol diklik
+                    });
+                } else {
+                    // Jika bukan soal terakhir, tetap gunakan tombol "Selanjutnya"
+                    nextQuestion.textContent = "Selanjutnya ▶";
+                    nextQuestion.removeEventListener("click", startTest); // Hapus event sebelumnya
+                    nextQuestion.addEventListener("click", goToNextQuestion);
+                }
+            }
+
+// Fungsi untuk pindah ke pertanyaan berikutnya
+function goToNextQuestion() {
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        updateQuestion();
+    }
+}
+
+            // Buka pop-up saat tombol "Lihat Soal" diklik
+            openPopup.addEventListener("click", function () {
+                popup.style.display = "block";
+                overlay.style.display = "block";
+                currentQuestion = 0;
+                updateQuestion();
+            });
+
+            // Tutup pop-up
+            closePopup.addEventListener("click", function () {
+                popup.style.display = "none";
+                overlay.style.display = "none";
+            });
+
+// **Tambahkan event listener untuk tombol "Selanjutnya"**
+nextQuestion.addEventListener("click", function () {
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        updateQuestion();
+    }
+});
+
+            // Navigasi soal sebelumnya
+            prevQuestion.addEventListener("click", function () {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    updateQuestion();
+                }
+            });
+        });
         
+        // Event listener untuk tombol "Selanjutnya"
+nextQuestion.addEventListener("click", goToNextQuestion);
+
         function startTest() {
             Swal.fire({
                 title: 'Test akan dimulai',

@@ -94,14 +94,14 @@
 
             if (!token) {
                 console.warn("❌ Token tidak ditemukan! Redirect ke halaman login...");
-                window.location.href = "do.my.id";
+                window.location.href = "do.my.id/signin";
                 return;
             }
 
             showLoading(true);
 
             try {
-                const response = await fetch(`${API_URL}/api/iq/user`, {
+                const response = await fetch(`${API_URL}/api/iq/new`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -112,15 +112,21 @@
                 if (!response.ok) throw new Error("Gagal mengambil hasil tes IQ.");
 
                 const result = await response.json();
+
+                // Pastikan respons memiliki data yang valid
                 document.getElementById("username").innerText = result.name || "Tidak tersedia";
                 document.getElementById("score").innerText = result.score || "Tidak tersedia";
                 document.getElementById("iq").innerText = result.iq || "Tidak tersedia";
+                document.getElementById("datetime").innerText = result.datetime || "Tidak tersedia";
 
             } catch (error) {
                 console.error("❌ Error fetching test results:", error);
+
+                // Tampilkan pesan default jika terjadi error
                 document.getElementById("username").innerText = result.name || "Tidak tersedia";
                 document.getElementById("score").innerText = "Tidak tersedia";
                 document.getElementById("iq").innerText = "Tidak tersedia";
+                document.getElementById("datetime").innerText = result.datetime || "Tidak tersedia";
 
                 Swal.fire({
                     icon: "error",

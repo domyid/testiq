@@ -126,41 +126,50 @@ async function processResults() {
     let token = getCookie("login");
 
     if (!token) {
-        console.warn("❌ Token tidak ditemukan! Login lalu ke do.my.id/testiq");
-        window.location.href = "do.my.id";
+        console.warn("❌ Token tidak ditemukan! Login lalu menuju URL do.my.id/testiq");
+        window.location.href = "do.my.id/signin/";
         return;
     }
 
     try {
-        // [NEW] Ambil nama pengguna dari token (jika ada parsing JWT, gunakan di backend)
-        let userResponse = await fetch(`${API_URL}/api/iq/user`, {
+        // Ambil nama pengguna dari backend (bukan dari backend)
+        let userResponse = await fetch(`${API_URL}/api/iq/new`, {
             method: "GET",
             headers: { "login": token }
         });
 
         let userData = await userResponse.json();
+        if (!userResponse.ok) throw new Error(`Gagal mendapatkan data user! ${userData.error}`);
+
         let userName = userData.name || "Anonim"; // Gunakan nama dari token, default ke 'Anonim'
 
+        // Mengirim jawaban ke backend
         let response = await fetch(`${API_URL}/api/iq/answer`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "login": token
             },
-            body: JSON.stringify({ name: userName, answers: listJawaban }) // [FIX] Gunakan nama pengguna asli
+            body: JSON.stringify({ name: userName, answers: listJawaban }) // Gunakan nama dari backend
         });
 
         let data = await response.json();
         if (!response.ok) throw new Error(`Gagal menyimpan hasil tes! ${data.error}`);
 
         console.log("✅ Jawaban berhasil dikirim:", data);
-        window.location.href = "hasiltest.html";
+        window.location.href = "hasiltestiq.html";
 
     } catch (error) {
         console.error("❌ Error saat mengirim jawaban:", error);
-        alert("Terjadi kesalahan saat mengirim jawaban. Silakan coba lagi.");
+        Swal.fire({
+            icon: "error",
+            title: "Gagal Menyimpan Jawaban",
+            text: error.message,
+            confirmButtonText: "OK",
+        });
     }
 }
+
 
 // Fungsi untuk ke soal berikutnya
 async function initNextQuestion() {
