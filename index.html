@@ -192,21 +192,6 @@
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
-
-    <script type="module">
-        import {getCookie} from "https://cdn.jsdelivr.net/gh/jscroot/cookie@0.0.1/croot.js";
-    
-        async function loadResults() {
-            let token = getCookie("login");
-    
-            if (!token) {
-                console.warn("❌ Token tidak ditemukan! login terlebih dahulu lalu menuju URL do.my.id/testiq");
-                window.location.href = "do.my.id/signin";
-                return;
-            }
-        }
-    </script>
-
     <script>
         // Script untuk halaman Kebijakan Privasi
         document.addEventListener('DOMContentLoaded', function() {
@@ -242,6 +227,8 @@
             });
         });
     </script>
+    <script type="module" src="index.js"></script>
+
 </body>
 
 </html>
