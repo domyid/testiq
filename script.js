@@ -1,12 +1,12 @@
 import {getCookie} from "https://cdn.jsdelivr.net/gh/jscroot/cookie@0.0.1/croot.js";
 
 // Inisialisasi
-let minutes = 1;
+let minutes = 12;
 let seconds = 0;
 let question_page = 1;
 const question_last_page = 50;
 let timerInterval;
-let currentQuestionId = "1";
+let currentQuestionId = "49";
 let question = null;
 let listJawaban = [];
 let isExpired = false;
@@ -102,7 +102,7 @@ function startTimer() {
             Swal.fire({
                 icon: 'success',
                 title: 'Waktu habis.',
-                text: 'Terimakasih sudah melakukan tes, hasil IQ kamu akan keluar segera.',
+                text: 'Terimakasih sudah melakukan tes IQ, hasil IQ kamu akan segera keluar.',
                 confirmButtonText: "OK",
             }).then(() => {
                 processResults();
@@ -192,22 +192,29 @@ async function initNextQuestion() {
 
     listJawaban.push(selectedAnswer);
 
-    question_page++;
-    if (question_page > question_last_page) {
-        processResults();
+    if (question_page >= question_last_page) {
+        // Jika sudah sampai soal terakhir, ubah tombol menjadi "Selesai"
+        nextButtonElement.innerText = "Selesai";
+        nextButtonElement.removeEventListener("click", initNextQuestion);
+        nextButtonElement.addEventListener("click", processResults);
         return;
     }
 
-    nextButtonElement.disabled = true;
+    question_page++;
     currentQuestionId = String(parseInt(currentQuestionId) + 1);
 
     try {
         await getQuestionById(currentQuestionId);
         questionNumberElement.innerText = `Pertanyaan ${question_page} dari ${question_last_page}`;
+
+        // Jika ini pertanyaan terakhir (50), ubah tombol menjadi "Selesai"
+        if (question_page == question_last_page) {
+            nextButtonElement.innerText = "Selesai";
+            nextButtonElement.removeEventListener("click", initNextQuestion);
+            nextButtonElement.addEventListener("click", processResults);
+        }
     } catch (error) {
         console.error("Gagal memuat soal berikutnya:", error);
-    } finally {
-        nextButtonElement.disabled = false;
     }
 }
 
