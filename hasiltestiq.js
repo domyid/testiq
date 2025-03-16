@@ -23,7 +23,7 @@ async function getIqTestResult() {
     }
 
     try {
-        let response = await fetch(`${API_URL}/api/iq/user`, {
+        let response = await fetch(`${API_URL}/api/iq/new`, {
             method: "GET",
             headers: { "login": token }
         });

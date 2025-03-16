@@ -10,7 +10,7 @@ let currentQuestionId = "1";
 let question = null;
 let listJawaban = [];
 let isExpired = false;
-let finalScore = [];
+// let finalScore = [];
 
 // API Endpoint
 const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
