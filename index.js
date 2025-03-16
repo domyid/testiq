@@ -4,8 +4,8 @@ async function verifyLogin() {
     let token = getCookie("login");
 
     if (!token) {
-        console.warn("❌ Token tidak ditemukan! Redirect ke halaman login...");
-        window.location.href = "do.my.id/signin";
+        console.warn("❌ Token tidak ditemukan! Redirect ke halaman login..., lalu anda balik lagi ke https://do.my.id/testiq");
+        window.location.href = "https://do.my.id/signin";
         return;
     }
 
