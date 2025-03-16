@@ -6,7 +6,7 @@ let seconds = 0;
 let question_page = 1;
 const question_last_page = 50;
 let timerInterval;
-let currentQuestionId = "49";
+let currentQuestionId = "1";
 let question = null;
 let listJawaban = [];
 let isExpired = false;
