@@ -120,8 +120,10 @@
                 document.getElementById("datetime").innerText = result.datetime || "Tidak tersedia";
 
             } catch (error) {
-                console.error("❌ Error fetching test results:", error);
+                // console.error("❌ Error fetching test results:", error);
 
+                const result = await response.json();
+                
                 // Tampilkan pesan default jika terjadi error
                 document.getElementById("username").innerText = result.name || "Tidak tersedia";
                 document.getElementById("score").innerText = "Tidak tersedia";
