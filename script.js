@@ -10,7 +10,6 @@ let currentQuestionId = "1";
 let question = null;
 let listJawaban = [];
 let isExpired = false;
-// let finalScore = [];
 
 // API Endpoint
 const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
@@ -40,18 +39,18 @@ function displayQuestion() {
         questionTextElement.innerHTML = "<strong>Soal tidak tersedia.</strong>";
         return;
     }
-    // console.log(question.question)
-    // Tampilkan teks soal
+
+    // Menampilkan teks soal
     questionTextElement.innerHTML = (question.question);
-    // console.log(questionTextElement)
-    // Tampilkan gambar jika ada
+
+    // Menampilkan soal gambar
     if (question.image && question.image.trim() !== "") {
         questionImageContainer.innerHTML = `<img src="${question.image}" alt="Gambar Soal" style="max-width:100%; display:block;">`;
     } else {
         questionImageContainer.innerHTML = "";
     }
 
-    // Gunakan input text untuk jawaban
+    // Menggunakan input text untuk jawaban
     jawabanContainer.innerHTML = `
         <input type="text" id="text-answer" class="text-answer-input"
                placeholder="Ketik jawaban Anda di sini..."
@@ -66,8 +65,6 @@ async function getQuestionById(id) {
         questionContainerElement.style.display = "none";
 
         const response = await fetch(`${API_URL}/api/iq/question/${id}`);
-        // console.log(response)
-        // console.log(response.id)
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();

@@ -447,44 +447,44 @@
                 }
             }
 
-// Fungsi untuk pindah ke pertanyaan berikutnya
-function goToNextQuestion() {
-    if (currentQuestion < questions.length - 1) {
-        currentQuestion++;
-        updateQuestion();
-    }
-}
+            // Fungsi untuk pindah ke pertanyaan berikutnya
+            function goToNextQuestion() {
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    updateQuestion();
+                }
+            }
 
-            // Buka pop-up saat tombol "Lihat Soal" diklik
-            openPopup.addEventListener("click", function () {
-                popup.style.display = "block";
-                overlay.style.display = "block";
-                currentQuestion = 0;
-                updateQuestion();
-            });
+                        // Buka pop-up saat tombol "Lihat Soal" diklik
+                        openPopup.addEventListener("click", function () {
+                            popup.style.display = "block";
+                            overlay.style.display = "block";
+                            currentQuestion = 0;
+                            updateQuestion();
+                        });
 
-            // Tutup pop-up
-            closePopup.addEventListener("click", function () {
-                popup.style.display = "none";
-                overlay.style.display = "none";
-            });
+                        // Tutup pop-up
+                        closePopup.addEventListener("click", function () {
+                            popup.style.display = "none";
+                            overlay.style.display = "none";
+                        });
 
-// **Tambahkan event listener untuk tombol "Selanjutnya"**
-nextQuestion.addEventListener("click", function () {
-    if (currentQuestion < questions.length - 1) {
-        currentQuestion++;
-        updateQuestion();
-    }
-});
-
-            // Navigasi soal sebelumnya
-            prevQuestion.addEventListener("click", function () {
-                if (currentQuestion > 0) {
-                    currentQuestion--;
+            // **Tambahkan event listener untuk tombol "Selanjutnya"**
+            nextQuestion.addEventListener("click", function () {
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
                     updateQuestion();
                 }
             });
-        });
+
+                        // Navigasi soal sebelumnya
+                        prevQuestion.addEventListener("click", function () {
+                            if (currentQuestion > 0) {
+                                currentQuestion--;
+                                updateQuestion();
+                            }
+                        });
+                    });
         
         // Event listener untuk tombol "Selanjutnya"
 nextQuestion.addEventListener("click", goToNextQuestion);

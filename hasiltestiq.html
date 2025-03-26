@@ -116,11 +116,7 @@
                 document.getElementById("iq").innerText = result.iq || "Tidak tersedia";
                 document.getElementById("datetime").innerText = result.datetime || "Tidak tersedia";
 
-            } catch (error) {
-                // console.error("❌ Error fetching test results:", error);
-
-                // const result = await response.json();
-                
+            } catch (error) {                
                 // Tampilkan pesan default jika terjadi error
                 document.getElementById("username").innerText = result.name || "Tidak tersedia";
                 document.getElementById("score").innerText = "Tidak tersedia";
