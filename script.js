@@ -123,8 +123,8 @@ async function processResults() {
     let token = getCookie("login");
 
     if (!token) {
-        console.warn("❌ Token tidak ditemukan! Login lalu menuju URL do.my.id/testiq");
-        window.location.href = "do.my.id/signin/";
+        console.warn("❌ Token tidak ditemukan! Login lalu menuju URL https://do.my.id/testiq");
+        window.location.href = "https://do.my.id/signin/";
         return;
     }
 

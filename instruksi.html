@@ -351,7 +351,7 @@
     </div>
     
     <footer>
-        &copy; 2025 Test IQ App | <a href="#" class="privacy-link" onclick="showPrivacyPolicy()">DoMyID</a>
+        &copy; 2025 Test IQ App | <a href="https://do.my.id" class="privacy-link" onclick="showPrivacyPolicy()">domyid</a>
     </footer>
         
         <!-- SweetAlert2 -->
@@ -469,7 +469,7 @@
                             overlay.style.display = "none";
                         });
 
-            // **Tambahkan event listener untuk tombol "Selanjutnya"**
+            // Tambahkan event listener untuk tombol "Selanjutnya
             nextQuestion.addEventListener("click", function () {
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
@@ -508,11 +508,12 @@ nextQuestion.addEventListener("click", goToNextQuestion);
                     redirectToTestPage(); 
             });
         }
-        
+        // fungsi redirect ke halaman tes
         function redirectToTestPage() {
             const testPageUrl = "./test.html";
             window.location.href = testPageUrl;
         }
+
     </script>
 </body>
 </html>
