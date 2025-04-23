@@ -56,6 +56,7 @@ function displayQuestion() {
                placeholder="Ketik jawaban Anda di sini..."
                style="width:100%; padding:10px; font-size:16px;">
     `;
+    focusInput();
 }
 
 // Fungsi untuk mengambil soal berdasarkan ID
@@ -187,6 +188,8 @@ async function initNextQuestion() {
         return;
     }
 
+    
+    console.log("User answer:", selectedAnswer);
     listJawaban.push(selectedAnswer);
 
     if (question_page >= question_last_page) {
@@ -214,6 +217,22 @@ async function initNextQuestion() {
         console.error("Gagal memuat soal berikutnya:", error);
     }
 }
+
+function focusInput() {
+    const input = document.getElementById("text-answer");
+    if (input) {
+        input.focus();
+    }
+}
+
+// Saat tombol enter ditekan, trigger tombol Selanjutnya
+document.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        nextButtonElement.click();
+    }
+});
+
 
 // Saat dokumen siap
 document.addEventListener("DOMContentLoaded", function() {
