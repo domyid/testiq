@@ -10,6 +10,7 @@ let currentQuestionId = "1";
 let question = null;
 let listJawaban = [];
 let isExpired = false;
+let endTime;
 
 // API Endpoint
 const API_URL = "https://asia-southeast2-awangga.cloudfunctions.net/domyid";
@@ -93,9 +94,26 @@ function updateTimerDisplay() {
 
 // Fungsi untuk memulai timer
 function startTimer() {
+    const totalSeconds = 12 * 60; // 12 menit = 720 detik
+
+    // Cek apakah endTime sudah ada di localStorage
+    if (localStorage.getItem('endTime')) {
+        endTime = parseInt(localStorage.getItem('endTime'));
+    } else {
+        endTime = Date.now() + totalSeconds * 1000;
+        localStorage.setItem('endTime', endTime);
+    }
+
     timerInterval = setInterval(() => {
-        if (minutes === 0 && seconds === 0) {
+        const now = Date.now();
+        const distance = endTime - now;
+
+        if (distance <= 0) {
             clearInterval(timerInterval);
+            localStorage.removeItem('endTime'); // Bersihkan endTime setelah selesai
+            minutes = 0;
+            seconds = 0;
+            updateTimerDisplay();
             isExpired = true;
             Swal.fire({
                 icon: 'success',
@@ -107,12 +125,10 @@ function startTimer() {
             });
             return;
         }
-        if (seconds === 0) {
-            minutes--;
-            seconds = 59;
-        } else {
-            seconds--;
-        }
+
+        minutes = Math.floor((distance / 1000) / 60);
+        seconds = Math.floor((distance / 1000) % 60);
+
         updateTimerDisplay();
     }, 1000);
 }
