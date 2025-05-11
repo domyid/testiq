@@ -92,45 +92,42 @@ function updateTimerDisplay() {
     secondsElement.innerText = String(seconds).padStart(2, '0');
 }
 
-// Fungsi untuk memulai timer
-function startTimer() {
-    const totalSeconds = 12 * 60; // 12 menit = 720 detik
 
-    // Cek apakah endTime sudah ada di localStorage
-    if (localStorage.getItem('endTime')) {
-        endTime = parseInt(localStorage.getItem('endTime'));
-    } else {
-        endTime = Date.now() + totalSeconds * 1000;
-        localStorage.setItem('endTime', endTime);
+// Mulai timer 12 menit
+function startTimer() {
+  const totalMs = 12 * 60 * 1000;
+
+  // pakai sessionStorage agar clear saat tab closed / reload
+  if (sessionStorage.getItem('endTime')) {
+    endTime = parseInt(sessionStorage.getItem('endTime'), 10);
+  } else {
+    endTime = Date.now() + totalMs;
+    sessionStorage.setItem('endTime', String(endTime));
+  }
+
+  timerInterval = setInterval(() => {
+    const now      = Date.now();
+    const distance = endTime - now;
+
+    if (distance <= 0) {
+      clearInterval(timerInterval);
+      sessionStorage.removeItem('endTime');
+      minutes = seconds = 0;
+      updateTimerDisplay();
+      isExpired = true;
+      Swal.fire({
+        icon: 'success',
+        title: 'Waktu habis.',
+        text: 'Terima kasih sudah mengikuti tes IQ, hasil akan segera keluar.',
+        confirmButtonText: 'OK'
+      }).then(processResults);
+      return;
     }
 
-    timerInterval = setInterval(() => {
-        const now = Date.now();
-        const distance = endTime - now;
-
-        if (distance <= 0) {
-            clearInterval(timerInterval);
-            localStorage.removeItem('endTime'); // Bersihkan endTime setelah selesai
-            minutes = 0;
-            seconds = 0;
-            updateTimerDisplay();
-            isExpired = true;
-            Swal.fire({
-                icon: 'success',
-                title: 'Waktu habis.',
-                text: 'Terimakasih sudah melakukan tes IQ, hasil IQ kamu akan segera keluar.',
-                confirmButtonText: "OK",
-            }).then(() => {
-                processResults();
-            });
-            return;
-        }
-
-        minutes = Math.floor((distance / 1000) / 60);
-        seconds = Math.floor((distance / 1000) % 60);
-
-        updateTimerDisplay();
-    }, 1000);
+    minutes = Math.floor((distance / 1000) / 60);
+    seconds = Math.floor((distance / 1000) % 60);
+    updateTimerDisplay();
+  }, 1000);
 }
 
 // [NEW] Fungsi untuk memproses hasil setelah submit
