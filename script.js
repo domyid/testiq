@@ -1,5 +1,4 @@
 import {getCookie} from "https://cdn.jsdelivr.net/gh/jscroot/cookie@0.0.1/croot.js";
-import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11";
 
 // Inisialisasi
 let minutes = 12;
