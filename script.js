@@ -1,4 +1,5 @@
 import {getCookie} from "https://cdn.jsdelivr.net/gh/jscroot/cookie@0.0.1/croot.js";
+import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11";
 
 // Inisialisasi
 let minutes = 12;
@@ -25,12 +26,6 @@ const questionNumberElement = document.getElementById('question-number');
 const minutesElement = document.getElementById("minutes");
 const secondsElement = document.getElementById("seconds");
 const nextButtonElement = document.getElementById('next-button');
-const progressBar = document.getElementById('progress-bar');
-
-function updateProgress(current, total) {
-  const pct = Math.floor((current / total) * 100);
-  progressBar.style.width = pct + '%';
-}
 
 // Fungsi decode HTML entities
 function htmlDecode(input) {
@@ -263,7 +258,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     getQuestionById(currentQuestionId);
-    updateProgress(question_page, question_last_page);
     startTimer();
     updateTimerDisplay();
 });

@@ -170,19 +170,3 @@ body {
 .border-r-biru {
     border-right-color: #3030f8;
 }
-
-/* progress–tracker */
-.progress-container {
-  width: 100%;
-  height: 8px;
-  background-color: #e5e7eb;      /* abu terang */
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 12px 0;
-}
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background-color: #3030f8;       /* biru utama */
-  transition: width 0.3s ease;
-}
