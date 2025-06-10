@@ -10,6 +10,12 @@ Tata Cara:
     <img src="https://github.com/user-attachments/assets/c04c603e-1192-4a7d-a000-18b20589d9c1" width="300">
  </p>
 
+- Membaca ketentuan test
+
+    <p align="center">
+    <img src="https://github.com/user-attachments/assets/6ba37606-ff28-4d29-9346-e7ca75684eb4" width="300">
+ </p>
+
 - Membaca Kebijakan Privasi Test IQ
 
     <p align="center">
